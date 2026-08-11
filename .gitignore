@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Production build output
+frontend/dist/
+dist/
+
+# SQLite Database & Uploaded Data
+backend/data/*.sqlite
+backend/data/*.sqlite-journal
+backend/data/uploads/*
+!backend/data/uploads/.gitkeep
+
+# Environment variables & local secrets
+.env
+.env.local
+*.log
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

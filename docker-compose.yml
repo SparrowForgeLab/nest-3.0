@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  nest3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest3-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - JWT_SECRET=sparrowforgelab_nest3_jwt_secret_2026_super_key
+      - VAULT_SECRET_KEY=sparrowforgelab_nest3_vault_secret_key_2026_32bytes!!
+    volumes:
+      - nest3-data:/app/backend/data
+
+volumes:
+  nest3-data:
