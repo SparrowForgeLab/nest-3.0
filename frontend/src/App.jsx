@@ -13,6 +13,7 @@ import EditCategoryModal from './components/Modals/EditCategoryModal';
 import SettingsModal from './components/Modals/SettingsModal';
 import VaultModal from './components/Modals/VaultModal';
 import TutorialModal from './components/Modals/TutorialModal';
+import BuyMeACoffeeCoin from './components/BuyMeACoffeeCoin';
 
 import TimeWidget from './components/Widgets/TimeWidget';
 import WeatherWidget from './components/Widgets/WeatherWidget';
@@ -475,17 +476,8 @@ export default function App() {
         {settings.show_dock !== 0 && <Dock items={dock} />}
       </div>
 
-      {/* Buy Me a Coffee Floating Badge */}
-      <a
-        href="https://buymeacoffee.com/sparrowforgelab"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-4 right-4 z-40 bg-amber-500/90 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-full shadow-2xl backdrop-blur-md transition flex items-center gap-2 text-xs border border-amber-400/50 group hover:scale-105"
-        title="Support Nest Development - Buy Me A NEURON / Coffee"
-      >
-        <span className="text-base group-hover:rotate-12 transition-transform">☕</span>
-        <span>Buy Me A NEURON</span>
-      </a>
+      {/* Buy Me A NEURON Sparrow Coin Widget */}
+      <BuyMeACoffeeCoin />
 
       {/* Command Palette */}
       <CommandPalette
