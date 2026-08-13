@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, Sliders, Image, Download, Upload, Palette, LayoutGrid, Eye, Search, Check, Trash2, Sparkles, MapPin, Clock, Layout, Sidebar, CloudSun, Star, Smartphone, ShieldCheck, ListPlus, Plus } from 'lucide-react';
+import { X, Sliders, Image, Download, Upload, Palette, LayoutGrid, Eye, Search, Check, Trash2, Sparkles, MapPin, Clock, Layout, Sidebar, CloudSun, Star, Smartphone, ShieldCheck, ListPlus, Plus, User, LogOut, KeyRound, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
 import ColorPicker from './ColorPicker';
 
 const PRESET_WALLPAPERS = [
@@ -41,12 +41,61 @@ const PRESET_WALLPAPERS = [
   }
 ];
 
-export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSettings, onRefreshData, onOpenEditPinned, onOpenEditDock, onAddCategory }) {
+export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSettings, onRefreshData, onOpenEditPinned, onOpenEditDock, onAddCategory, user, onLogout }) {
   const [activeTab, setActiveTab] = useState('appearance');
 
   const [theme, setTheme] = useState('sparrow-dark');
   const [searchEngine, setSearchEngine] = useState('google');
   const [userName, setUserName] = useState('Sparrow');
+
+  // User Profile & Password Change State
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pwdSuccessMsg, setPwdSuccessMsg] = useState('');
+  const [pwdErrorMsg, setPwdErrorMsg] = useState('');
+  const [isSubmittingPwd, setIsSubmittingPwd] = useState(false);
+
+  const handleChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPwdSuccessMsg('');
+    setPwdErrorMsg('');
+
+    if (!oldPassword.trim() || !newPassword.trim()) {
+      setPwdErrorMsg('Both current password and new password are required.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPwdErrorMsg('New password and confirm password do not match.');
+      return;
+    }
+
+    if (newPassword.length < 4) {
+      setPwdErrorMsg('New password must be at least 4 characters long.');
+      return;
+    }
+
+    setIsSubmittingPwd(true);
+    try {
+      const res = await axios.post('/api/auth/change-password', {
+        oldPassword: oldPassword.trim(),
+        newPassword: newPassword.trim()
+      });
+
+      if (res.data.success) {
+        setPwdSuccessMsg('Password updated successfully!');
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.error || err.message || 'Failed to update password. Check your current password.';
+      setPwdErrorMsg(msg);
+    } finally {
+      setIsSubmittingPwd(false);
+    }
+  };
   const [columnCount, setColumnCount] = useState(4);
   const [layoutStyle, setLayoutStyle] = useState('normal');
   const [viewMode, setViewMode] = useState('grid');
@@ -242,6 +291,7 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
   };
 
   const tabs = [
+    { id: 'profile', label: 'User Profile', icon: User },
     { id: 'appearance', label: 'Appearance', icon: Palette },
     { id: 'wallpaper', label: 'Wallpaper & Glass', icon: Image },
     { id: 'layout', label: 'Layout & Sidebars', icon: Sidebar },
@@ -289,6 +339,129 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-6 pr-2 text-xs sm:text-sm">
+          {/* TAB 0: USER PROFILE & SECURITY */}
+          {activeTab === 'profile' && (
+            <div className="space-y-6">
+              {/* Profile Account Card */}
+              <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800 space-y-4">
+                <h4 className="font-bold text-sky-400 flex items-center gap-1.5 text-sm sm:text-base">
+                  <User className="w-4 h-4" /> Account Details
+                </h4>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-400 to-indigo-500 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg">
+                      {(user?.username || 'U')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-base text-slate-100 flex items-center gap-2">
+                        {user?.username || 'Sparrow User'}
+                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-semibold">Active</span>
+                      </h5>
+                      <p className="text-xs text-slate-400">Account ID #{user?.id || '1'}</p>
+                    </div>
+                  </div>
+
+                  {onLogout && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onLogout();
+                      }}
+                      className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-bold transition flex items-center gap-2 text-xs"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-400" /> Log Out of Account
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Change Password Form */}
+              <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800 space-y-4">
+                <h4 className="font-bold text-sky-400 flex items-center gap-1.5 text-sm sm:text-base">
+                  <KeyRound className="w-4 h-4 text-sky-400" /> Security & Password Management
+                </h4>
+
+                {pwdErrorMsg && (
+                  <div className="px-3.5 py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs font-medium flex items-center gap-2 animate-fadeIn">
+                    <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <span>{pwdErrorMsg}</span>
+                  </div>
+                )}
+
+                {pwdSuccessMsg && (
+                  <div className="px-3.5 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-medium flex items-center gap-2 animate-fadeIn">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>{pwdSuccessMsg}</span>
+                  </div>
+                )}
+
+                <div className="space-y-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Current Password (Required)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Enter your current password"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 text-xs"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
+                        New Password
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="Enter new password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
+                        Confirm New Password
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="Confirm new password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="button"
+                      onClick={handleChangePasswordSubmit}
+                      disabled={isSubmittingPwd || !oldPassword.trim() || !newPassword.trim()}
+                      className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 transition"
+                    >
+                      {isSubmittingPwd ? (
+                        <span className="flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 animate-spin" /> Updating...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1.5">
+                          <KeyRound className="w-3.5 h-3.5" /> Change Password
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* TAB 1: APPEARANCE */}
           {activeTab === 'appearance' && (
             <div className="space-y-6">

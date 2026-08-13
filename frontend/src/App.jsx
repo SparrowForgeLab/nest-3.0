@@ -794,6 +794,8 @@ export default function App() {
           setEditingCategory(null);
           setIsCategoryModalOpen(true);
         }}
+        user={user}
+        onLogout={handleLogout}
       />
 
       <EditPinnedModal

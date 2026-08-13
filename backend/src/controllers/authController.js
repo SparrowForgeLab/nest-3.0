@@ -189,7 +189,39 @@ module.exports = {
     login,
     register,
     logout,
+    changePassword,
     verifyVaultPin,
     lockVault,
     checkStatus
 };
+
+/**
+ * Change User Password (Requires old password verification)
+ */
+function changePassword(req, res) {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+        return res.status(400).json({ error: 'Both current password and new password are required.' });
+    }
+
+    if (newPassword.length < 4) {
+        return res.status(400).json({ error: 'New password must be at least 4 characters long.' });
+    }
+
+    const user = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(userId);
+    if (!user) {
+        return res.status(404).json({ error: 'User account not found.' });
+    }
+
+    const validOldPassword = bcrypt.compareSync(oldPassword, user.password_hash);
+    if (!validOldPassword) {
+        return res.status(401).json({ error: 'Incorrect current password.' });
+    }
+
+    const newPasswordHash = bcrypt.hashSync(newPassword, 10);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newPasswordHash, userId);
+
+    res.json({ success: true, message: 'Password updated successfully!' });
+}
