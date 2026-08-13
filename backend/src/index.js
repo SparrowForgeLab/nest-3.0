@@ -100,6 +100,10 @@ app.post('/api/widgets/todos', authenticateToken, widgetController.createTodo);
 app.put('/api/widgets/todos/:id/toggle', authenticateToken, widgetController.toggleTodo);
 app.delete('/api/widgets/todos/:id', authenticateToken, widgetController.deleteTodo);
 
+app.get('/api/rss-feeds', authenticateToken, widgetController.getRssFeeds);
+app.post('/api/rss-feeds', authenticateToken, widgetController.createRssFeed);
+app.delete('/api/rss-feeds/:id', authenticateToken, widgetController.deleteRssFeed);
+
 app.put('/api/settings', authenticateToken, widgetController.updateSettings);
 app.post('/api/settings/upload-background', authenticateToken, widgetController.uploadBackground);
 

@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, Sliders, Image, Download, Upload, Palette, LayoutGrid, Eye, Search, Check, Trash2, Sparkles, MapPin, Clock, Layout, Sidebar, CloudSun, Star, Smartphone, ShieldCheck, ListPlus, Plus, User, LogOut, KeyRound, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, Sliders, Image, Download, Upload, Palette, LayoutGrid, Eye, Search, Check, Trash2, Sparkles, MapPin, Clock, Layout, Sidebar, CloudSun, Star, Smartphone, ShieldCheck, ListPlus, Plus, User, LogOut, KeyRound, Lock, AlertCircle, CheckCircle2, Rss } from 'lucide-react';
 import ColorPicker from './ColorPicker';
+
+const POPULAR_RSS_PRESETS = [
+  { title: 'Hacker News', url: 'https://news.ycombinator.com/rss', category: 'Tech' },
+  { title: 'TechCrunch', url: 'https://techcrunch.com/feed/', category: 'Tech' },
+  { title: 'The Verge', url: 'https://www.theverge.com/rss/index.xml', category: 'Tech' },
+  { title: 'BBC World', url: 'http://feeds.bbci.co.uk/news/rss.xml', category: 'General' },
+  { title: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index', category: 'Tech' },
+  { title: 'Reddit Tech', url: 'https://www.reddit.com/r/technology/.rss', category: 'Social' }
+];
 
 const PRESET_WALLPAPERS = [
   {
@@ -134,6 +143,71 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+
+  // Multi-Feed RSS State & Handlers
+  const [rssFeeds, setRssFeeds] = useState([]);
+  const [newRssTitle, setNewRssTitle] = useState('');
+  const [newRssUrl, setNewRssUrl] = useState('');
+  const [newRssCategory, setNewRssCategory] = useState('Tech');
+  const [isAddingRss, setIsAddingRss] = useState(false);
+  const [rssMsg, setRssMsg] = useState('');
+
+  const fetchRssFeeds = async () => {
+    try {
+      const res = await axios.get('/api/rss-feeds');
+      if (res.data.success) {
+        setRssFeeds(res.data.feeds);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    if (isOpen) fetchRssFeeds();
+  }, [isOpen]);
+
+  const handleAddRssFeed = async (e) => {
+    e.preventDefault();
+    if (!newRssUrl.trim()) return;
+    setIsAddingRss(true);
+    setRssMsg('');
+    try {
+      const res = await axios.post('/api/rss-feeds', {
+        title: newRssTitle.trim() || 'RSS Feed',
+        url: newRssUrl.trim(),
+        category: newRssCategory
+      });
+      if (res.data.success) {
+        setRssFeeds(prev => [...prev, res.data.feed]);
+        setNewRssTitle('');
+        setNewRssUrl('');
+        setRssMsg('RSS Feed added successfully!');
+        onRefreshData && onRefreshData();
+      }
+    } catch (err) {
+      setRssMsg('Failed to add RSS feed.');
+    } finally {
+      setIsAddingRss(false);
+    }
+  };
+
+  const handleDeleteRssFeed = async (id) => {
+    try {
+      await axios.delete(`/api/rss-feeds/${id}`);
+      setRssFeeds(prev => prev.filter(f => f.id !== id));
+      onRefreshData && onRefreshData();
+    } catch (e) {}
+  };
+
+  const handleQuickAddRssPreset = async (preset) => {
+    try {
+      const res = await axios.post('/api/rss-feeds', preset);
+      if (res.data.success) {
+        setRssFeeds(prev => [...prev, res.data.feed]);
+        setRssMsg(`Added ${preset.title}!`);
+        onRefreshData && onRefreshData();
+      }
+    } catch (e) {}
+  };
 
   useEffect(() => {
     if (settings) {
@@ -722,6 +796,128 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
                       <option value="right-sidebar">Right Collapsible Sidebar</option>
                     </select>
                   </div>
+                </div>
+              </div>
+
+              {/* RSS Reader & Multi-Feed Manager Section */}
+              <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h4 className="font-bold text-sky-400 flex items-center gap-1.5 text-sm sm:text-base">
+                    <Rss className="w-4 h-4 text-amber-400" /> Multi-Feed RSS Reader Manager
+                  </h4>
+                  <label className="flex items-center gap-2 text-slate-200 font-semibold cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showRss}
+                      onChange={(e) => setShowRss(e.target.checked)}
+                      className="rounded border-slate-700 bg-slate-900 text-sky-500 w-4 h-4"
+                    />
+                    Enable RSS Reader Widget
+                  </label>
+                </div>
+
+                {rssMsg && (
+                  <div className="px-3.5 py-2 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-200 text-xs font-medium flex items-center gap-2 animate-fadeIn">
+                    <Sparkles className="w-4 h-4 text-sky-400" />
+                    <span>{rssMsg}</span>
+                  </div>
+                )}
+
+                {/* Add New RSS Feed Form */}
+                <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-3">
+                  <h5 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                    <Plus className="w-3.5 h-3.5 text-amber-400" /> Add Custom RSS Feed
+                  </h5>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                    <div className="sm:col-span-5">
+                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">Feed Title</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Hacker News, BBC, TechCrunch"
+                        value={newRssTitle}
+                        onChange={(e) => setNewRssTitle(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 text-xs outline-none focus:border-sky-400"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-7">
+                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">RSS Feed URL</label>
+                      <input
+                        type="url"
+                        placeholder="https://news.ycombinator.com/rss"
+                        value={newRssUrl}
+                        onChange={(e) => setNewRssUrl(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 text-xs outline-none focus:border-sky-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="text-[11px] text-slate-400">Supports XML, RSS, and Atom feeds.</span>
+                    <button
+                      type="button"
+                      onClick={handleAddRssFeed}
+                      disabled={isAddingRss || !newRssUrl.trim()}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 transition"
+                    >
+                      <Plus className="w-4 h-4" /> Add RSS Feed
+                    </button>
+                  </div>
+                </div>
+
+                {/* Popular RSS Feed Presets */}
+                <div className="pt-1">
+                  <span className="text-[11px] font-semibold text-slate-400 block mb-2">Quick Add Popular News Feeds:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {POPULAR_RSS_PRESETS.map((preset) => (
+                      <button
+                        key={preset.url}
+                        type="button"
+                        onClick={() => handleQuickAddRssPreset(preset)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/60 text-slate-300 hover:text-amber-300 hover:border-amber-400/50 hover:bg-slate-800 text-xs font-medium transition"
+                      >
+                        <Rss className="w-3.5 h-3.5 text-amber-400" />
+                        <span>{preset.title}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Current Active RSS Feeds List */}
+                <div className="space-y-2 pt-2">
+                  <h5 className="font-bold text-xs text-slate-300">Your Active RSS Feeds ({rssFeeds.length})</h5>
+                  {rssFeeds.length > 0 ? (
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {rssFeeds.map((feed) => (
+                        <div
+                          key={feed.id}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition text-xs"
+                        >
+                          <div className="min-w-0 pr-2">
+                            <div className="font-bold text-slate-100 truncate flex items-center gap-2">
+                              <span>{feed.title}</span>
+                              <span className="text-[10px] bg-slate-800 text-amber-300 px-1.5 py-0.5 rounded border border-slate-700">
+                                {feed.category || 'General'}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400 truncate">{feed.url}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteRssFeed(feed.id)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-500/20 transition flex-shrink-0"
+                            title="Delete Feed"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-3 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-xl">
+                      No custom RSS feeds configured yet. Click popular presets above or add one manually!
+                    </div>
+                  )}
                 </div>
               </div>
 

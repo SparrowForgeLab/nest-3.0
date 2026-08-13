@@ -525,7 +525,7 @@ export default function App() {
                 />
               )}
               {leftSidebarWidgets.includes('todo') && <TodoWidget />}
-              {leftSidebarWidgets.includes('rss') && <RSSWidget feedUrl="https://news.ycombinator.com/rss" />}
+              {leftSidebarWidgets.includes('rss') && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
               {leftSidebarWidgets.length === 0 && (
                 <div className="p-4 rounded-xl border border-slate-800/80 bg-slate-900/60 text-center space-y-2.5 my-4">
                   <p className="text-xs text-slate-400 font-medium">Left Sidebar is empty</p>
@@ -615,7 +615,7 @@ export default function App() {
                 />
               )}
               {rightSidebarWidgets.includes('todo') && <TodoWidget />}
-              {rightSidebarWidgets.includes('rss') && <RSSWidget feedUrl="https://news.ycombinator.com/rss" />}
+              {rightSidebarWidgets.includes('rss') && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
               {rightSidebarWidgets.length === 0 && (
                 <div className="p-4 rounded-xl border border-slate-800/80 bg-slate-900/60 text-center space-y-2.5 my-4">
                   <p className="text-xs text-slate-400 font-medium">Right Sidebar is empty</p>
@@ -693,7 +693,7 @@ export default function App() {
                 />
               )}
               {settings.show_todo !== 0 && todoPos === 'grid' && <TodoWidget />}
-              {settings.show_rss === 1 && rssPos === 'grid' && <RSSWidget feedUrl="https://news.ycombinator.com/rss" />}
+              {settings.show_rss === 1 && rssPos === 'grid' && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
             </div>
           )}
 

@@ -272,6 +272,51 @@ module.exports = {
     createTodo,
     toggleTodo,
     deleteTodo,
+    getRssFeeds,
+    createRssFeed,
+    deleteRssFeed,
     updateSettings,
     uploadBackground
 };
+
+/**
+ * Multi-RSS Feeds Management
+ */
+function getRssFeeds(req, res) {
+    const userId = req.user.id;
+    let feeds = db.prepare('SELECT * FROM rss_feeds WHERE user_id = ? ORDER BY id ASC').all(userId);
+
+    if (feeds.length === 0) {
+        db.prepare('INSERT INTO rss_feeds (user_id, title, url, category) VALUES (?, ?, ?, ?)').run(userId, 'Hacker News', 'https://news.ycombinator.com/rss', 'Tech');
+        db.prepare('INSERT INTO rss_feeds (user_id, title, url, category) VALUES (?, ?, ?, ?)').run(userId, 'TechCrunch', 'https://techcrunch.com/feed/', 'Tech');
+        feeds = db.prepare('SELECT * FROM rss_feeds WHERE user_id = ? ORDER BY id ASC').all(userId);
+    }
+
+    res.json({ success: true, feeds });
+}
+
+function createRssFeed(req, res) {
+    const userId = req.user.id;
+    const { title, url, category } = req.body;
+
+    if (!url || !url.trim()) {
+        return res.status(400).json({ error: 'Feed URL is required' });
+    }
+
+    const cleanTitle = title && title.trim() ? title.trim() : 'RSS Feed';
+    const cleanUrl = url.trim();
+    const cleanCategory = category && category.trim() ? category.trim() : 'General';
+
+    const result = db.prepare('INSERT INTO rss_feeds (user_id, title, url, category) VALUES (?, ?, ?, ?)').run(userId, cleanTitle, cleanUrl, cleanCategory);
+
+    const newFeed = db.prepare('SELECT * FROM rss_feeds WHERE id = ?').get(result.lastInsertRowid);
+    res.json({ success: true, feed: newFeed });
+}
+
+function deleteRssFeed(req, res) {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    db.prepare('DELETE FROM rss_feeds WHERE id = ? AND user_id = ?').run(id, userId);
+    res.json({ success: true });
+}
