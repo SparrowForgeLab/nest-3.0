@@ -1,16 +1,12 @@
 import React from 'react';
-import { Star, Settings2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import RenderIcon from './RenderIcon';
 
 export default function FeaturedLinks({ items = [], onOpenEditPinned }) {
   if (!items || items.length === 0) {
     return (
       <div className="w-full max-w-4xl mx-auto mb-6">
-        <div className="flex items-center justify-between px-4 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-md backdrop-blur-md">
-          <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-sky-400 fill-sky-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pinned Links Shelf</span>
-          </div>
+        <div className="flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-md backdrop-blur-md">
           {onOpenEditPinned && (
             <button
               onClick={onOpenEditPinned}
@@ -26,11 +22,6 @@ export default function FeaturedLinks({ items = [], onOpenEditPinned }) {
 
   return (
     <div className="w-full max-w-4xl mx-auto mb-6 group/shelf">
-      <div className="flex items-center gap-2 mb-2 px-1">
-        <Star className="w-3.5 h-3.5 text-sky-400 fill-sky-400" />
-        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pinned Shelf</span>
-      </div>
-
       <div className="flex flex-wrap items-center justify-center gap-3">
         {items.map((item) => {
           const isFileScheme = item.url && item.url.startsWith('file://');
