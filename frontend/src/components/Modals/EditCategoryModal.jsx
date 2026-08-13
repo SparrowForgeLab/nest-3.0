@@ -16,17 +16,22 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
       setIcon(category.icon || '📁');
       setColor(category.color || '#38bdf8');
       setIsVault(category.is_vault === 1);
+    } else {
+      setName('');
+      setIcon('📁');
+      setColor('#38bdf8');
+      setIsVault(false);
     }
   }, [category, isOpen]);
 
-  if (!isOpen || !category) return null;
+  if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
 
     onSaveCategory({
-      id: category.id,
+      ...(category?.id ? { id: category.id } : {}),
       name,
       icon,
       color,
@@ -36,7 +41,7 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Delete category "${category.name}" and all its bookmarks?`)) {
+    if (category && window.confirm(`Delete category "${category.name}" and all its bookmarks?`)) {
       onDeleteCategory && onDeleteCategory(category.id);
       onClose();
     }
@@ -48,7 +53,7 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
         <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
           <div className="flex items-center gap-2">
             <span className="text-xl">{icon}</span>
-            <h3 className="text-lg font-bold">Category Options</h3>
+            <h3 className="text-lg font-bold">{category ? 'Edit Category Options' : 'Add New Category Column'}</h3>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-200">
             <X className="w-5 h-5" />
@@ -61,6 +66,7 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
             <input
               type="text"
               required
+              placeholder="e.g. Work Tools, Social, Entertainment..."
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none focus:border-sky-400"
@@ -133,13 +139,17 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
           </label>
 
           <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-semibold transition flex items-center gap-1.5"
-            >
-              <Trash2 className="w-4 h-4" /> Delete Category
-            </button>
+            {category ? (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-semibold transition flex items-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Category
+              </button>
+            ) : (
+              <div />
+            )}
 
             <div className="flex gap-2">
               <button
@@ -153,7 +163,7 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
                 type="submit"
                 className="px-5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold transition shadow-lg"
               >
-                Save Category
+                {category ? 'Save Category' : 'Create Column'}
               </button>
             </div>
           </div>
