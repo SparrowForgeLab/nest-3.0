@@ -402,13 +402,13 @@ export default function App() {
   if (settings.show_clock !== 0 && settings.show_daily !== 0 && clockPos === 'left-sidebar') leftSidebarWidgets.push('clock');
   if (settings.show_weather !== 0 && weatherPos === 'left-sidebar') leftSidebarWidgets.push('weather');
   if (settings.show_todo !== 0 && todoPos === 'left-sidebar') leftSidebarWidgets.push('todo');
-  if (settings.show_rss === 1 && rssPos === 'left-sidebar') leftSidebarWidgets.push('rss');
+  if (settings.show_rss !== 0 && settings.show_rss !== false && rssPos === 'left-sidebar') leftSidebarWidgets.push('rss');
 
   const rightSidebarWidgets = [];
   if (settings.show_clock !== 0 && settings.show_daily !== 0 && clockPos === 'right-sidebar') rightSidebarWidgets.push('clock');
   if (settings.show_weather !== 0 && weatherPos === 'right-sidebar') rightSidebarWidgets.push('weather');
   if (settings.show_todo !== 0 && todoPos === 'right-sidebar') rightSidebarWidgets.push('todo');
-  if (settings.show_rss === 1 && rssPos === 'right-sidebar') rightSidebarWidgets.push('rss');
+  if (settings.show_rss !== 0 && settings.show_rss !== false && rssPos === 'right-sidebar') rightSidebarWidgets.push('rss');
 
   const hasLeftSidebar = true;
   const hasRightSidebar = true;
@@ -678,7 +678,7 @@ export default function App() {
           {/* Top Widgets Grid (For non-sidebar widgets) */}
           {((settings.show_weather !== 0 && weatherPos === 'grid') ||
             (settings.show_todo !== 0 && todoPos === 'grid') ||
-            (settings.show_rss === 1 && rssPos === 'grid')) && (
+            (settings.show_rss !== 0 && settings.show_rss !== false && rssPos === 'grid')) && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               {settings.show_weather !== 0 && weatherPos === 'grid' && (
                 <WeatherWidget
@@ -693,7 +693,7 @@ export default function App() {
                 />
               )}
               {settings.show_todo !== 0 && todoPos === 'grid' && <TodoWidget />}
-              {settings.show_rss === 1 && rssPos === 'grid' && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
+              {settings.show_rss !== 0 && settings.show_rss !== false && rssPos === 'grid' && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
             </div>
           )}
 
