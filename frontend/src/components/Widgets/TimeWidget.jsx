@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Sun, Moon, Sunrise, Sunset } from 'lucide-react';
+import { Clock, Sun, Moon, Sunrise, Sunset, Pencil, Check } from 'lucide-react';
 
-export default function TimeWidget({ clockType = 'digital', clockFormat = '12h' }) {
+export default function TimeWidget({ clockType = 'digital', clockFormat = '12h', userName = 'Sparrow', onSaveSettings }) {
   const [time, setTime] = useState(new Date());
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(userName);
+
+  useEffect(() => {
+    setNameInput(userName);
+  }, [userName]);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleNameSubmit = (e) => {
+    e.preventDefault();
+    if (nameInput.trim()) {
+      onSaveSettings && onSaveSettings({ user_name: nameInput.trim() });
+    }
+    setIsEditingName(false);
+  };
 
   const hours24 = time.getHours();
   const minutes = time.getMinutes();
@@ -58,8 +72,36 @@ export default function TimeWidget({ clockType = 'digital', clockFormat = '12h' 
           {greeting.icon}
         </div>
         <div>
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2 justify-center md:justify-start">
-            {greeting.text}, <span className="text-sky-400">Sparrow</span>
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-100 flex items-center gap-2 justify-center md:justify-start flex-wrap">
+            <span>{greeting.text},</span>
+            {isEditingName ? (
+              <form onSubmit={handleNameSubmit} className="inline-flex items-center gap-1">
+                <input
+                  type="text"
+                  autoFocus
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  className="bg-slate-900 border border-sky-500 rounded-lg px-2 py-0.5 text-sky-300 font-bold text-sm sm:text-base outline-none w-32"
+                />
+                <button
+                  type="submit"
+                  className="p-1 rounded-lg bg-sky-500 hover:bg-sky-400 text-white transition"
+                  title="Save Name"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditingName(true)}
+                title="Click to edit greeting name"
+                className="text-sky-400 hover:text-sky-300 font-bold transition flex items-center gap-1 group rounded-lg px-1 hover:bg-sky-500/10"
+              >
+                <span>{userName}</span>
+                <Pencil className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-sky-300 transition" />
+              </button>
+            )}
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 font-medium">{dateString}</p>
         </div>

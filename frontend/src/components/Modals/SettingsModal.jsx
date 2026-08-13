@@ -45,6 +45,7 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
 
   const [theme, setTheme] = useState('sparrow-dark');
   const [searchEngine, setSearchEngine] = useState('google');
+  const [userName, setUserName] = useState('Sparrow');
   const [columnCount, setColumnCount] = useState(4);
   const [layoutStyle, setLayoutStyle] = useState('normal');
   const [viewMode, setViewMode] = useState('grid');
@@ -88,6 +89,7 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
     if (settings) {
       setTheme(settings.theme || 'sparrow-dark');
       setSearchEngine(settings.search_engine || 'google');
+      setUserName(settings.user_name || 'Sparrow');
       setColumnCount(settings.column_count || 4);
       setLayoutStyle(settings.layout_style || 'normal');
       setViewMode(settings.view_mode || 'grid');
@@ -128,6 +130,7 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
     onSaveSettings({
       theme,
       search_engine: searchEngine,
+      user_name: userName.trim() || 'Sparrow',
       column_count: parseInt(columnCount, 10),
       layout_style: layoutStyle,
       view_mode: viewMode,
@@ -292,7 +295,18 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
                 <h4 className="font-bold text-sky-400 flex items-center gap-1.5 text-sm sm:text-base">
                   <Palette className="w-4 h-4" /> Aesthetic Theme Presets
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-slate-300 mb-1 font-medium">Greeting Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Sparrow, Alex, Captain..."
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-100 outline-none"
+                    />
+                  </div>
+
                   <div>
                     <label className="block text-slate-300 mb-1 font-medium">Select Theme</label>
                     <select

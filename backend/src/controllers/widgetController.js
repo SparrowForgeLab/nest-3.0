@@ -241,7 +241,7 @@ function updateSettings(req, res) {
         'rss_position', 'todo_position', 'weather_position', 'clock_position', 'background_image',
         'background_blur', 'background_dim', 'weather_location',
         'weather_lat', 'weather_lon', 'weather_units', 'weather_size',
-        'weather_layout', 'weather_display_size', 'left_sidebar_open', 'right_sidebar_open'
+        'weather_layout', 'weather_display_size', 'left_sidebar_open', 'right_sidebar_open', 'user_name'
     ];
 
     const updates = [];

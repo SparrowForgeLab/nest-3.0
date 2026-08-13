@@ -508,6 +508,8 @@ export default function App() {
                 <TimeWidget
                   clockType={settings.clock_type || 'digital'}
                   clockFormat={settings.clock_format || '12h'}
+                  userName={settings.user_name || (user ? user.username : 'Sparrow')}
+                  onSaveSettings={handleSaveSettings}
                 />
               )}
               {leftSidebarWidgets.includes('weather') && (
@@ -596,6 +598,8 @@ export default function App() {
                 <TimeWidget
                   clockType={settings.clock_type || 'digital'}
                   clockFormat={settings.clock_format || '12h'}
+                  userName={settings.user_name || (user ? user.username : 'Sparrow')}
+                  onSaveSettings={handleSaveSettings}
                 />
               )}
               {rightSidebarWidgets.includes('weather') && (
@@ -658,6 +662,8 @@ export default function App() {
             <TimeWidget
               clockType={settings.clock_type || 'digital'}
               clockFormat={settings.clock_format || '12h'}
+              userName={settings.user_name || (user ? user.username : 'Sparrow')}
+              onSaveSettings={handleSaveSettings}
             />
           )}
 
