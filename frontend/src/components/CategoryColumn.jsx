@@ -86,18 +86,17 @@ export default function CategoryColumn({
         </div>
 
         <div className="flex items-center gap-1.5">
-          {/* Column Bookmark Sort Toggle Button */}
+          {/* Column Bookmark Sort Toggle Button (Icon Only) */}
           <button
             onClick={handleToggleSort}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold border transition ${
+            className={`p-1.5 rounded-lg border transition-all duration-300 ${
               sortMode === 'az'
-                ? 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sm'
-                : 'bg-slate-800/60 text-slate-400 border-slate-700/60 hover:text-slate-200'
+                ? 'bg-sky-500/20 text-sky-400 border-sky-500/50 shadow-md ring-1 ring-sky-500/30'
+                : 'bg-slate-800/40 text-slate-400 border-slate-700/50 hover:text-slate-200 hover:bg-slate-800/80'
             }`}
-            title={sortMode === 'az' ? 'Sorted Alphabetically (A-Z). Click for Custom Drag & Drop.' : 'Sorted by Custom Drag & Drop. Click for Alphabetical A-Z.'}
+            title={sortMode === 'az' ? 'Sort Mode: Alphabetical (A-Z). Click for Custom Drag & Drop.' : 'Sort Mode: Custom Drag & Drop. Click for Alphabetical A-Z.'}
           >
-            <ArrowUpDown className="w-3 h-3" />
-            <span>{sortMode === 'az' ? 'A→Z' : 'CUSTOM'}</span>
+            <ArrowUpDown className={`w-4 h-4 transition-transform duration-300 ${sortMode === 'az' ? 'rotate-90 text-sky-400' : ''}`} />
           </button>
 
           <button
