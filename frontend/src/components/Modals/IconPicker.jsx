@@ -96,6 +96,19 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
     setPage(1);
   };
 
+  useEffect(() => {
+    if (selectedIcon && (selectedIcon.startsWith('http://') || selectedIcon.startsWith('https://') || selectedIcon.startsWith('data:'))) {
+      setCustomUrlInput(selectedIcon);
+    }
+  }, [selectedIcon]);
+
+  const handleCustomUrlChange = (val) => {
+    setCustomUrlInput(val);
+    if (val.trim()) {
+      onSelectIcon(val.trim());
+    }
+  };
+
   const handleFetchFavicon = () => {
     if (!customUrlInput.trim()) return;
     try {
@@ -104,6 +117,7 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
         domain = new URL(domain).hostname;
       }
       const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+      setCustomUrlInput(faviconUrl);
       onSelectIcon(faviconUrl);
     } catch (e) {
       onSelectIcon(customUrlInput.trim());
@@ -327,7 +341,7 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
                     type="url"
                     placeholder="e.g. https://plex.tv or https://site.com/logo.svg"
                     value={customUrlInput}
-                    onChange={(e) => setCustomUrlInput(e.target.value)}
+                    onChange={(e) => handleCustomUrlChange(e.target.value)}
                     className="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-1.5 text-slate-100 placeholder-slate-500 text-xs outline-none focus:border-sky-400"
                   />
                   <button

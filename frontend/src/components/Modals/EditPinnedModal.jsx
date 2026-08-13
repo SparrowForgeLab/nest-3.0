@@ -334,7 +334,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                             <div className="min-w-0 flex-1">
                               <h5 className="font-bold text-slate-200 text-xs truncate flex items-center gap-1.5">
                                 {item.title}
-                                {item.is_bookmark && (
+                                {Boolean(item.is_bookmark) && (
                                   <span className="text-[9px] bg-sky-500/20 text-sky-300 border border-sky-500/30 px-1.5 py-0.2 rounded font-mono">
                                     Category Bookmark
                                   </span>
