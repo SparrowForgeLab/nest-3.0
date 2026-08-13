@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, Star, Plus, Trash2, Edit2, ArrowUp, ArrowDown, Check, RefreshCw, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { X, Star, Plus, Trash2, Edit2, ArrowUp, ArrowDown, Check, RefreshCw, Link as LinkIcon, Sparkles, Folder } from 'lucide-react';
 import IconPicker from './IconPicker';
 import RenderIcon from '../RenderIcon';
 
@@ -20,6 +20,8 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [icon, setIcon] = useState('⭐');
+  const [isFolder, setIsFolder] = useState(false);
+  const [parentId, setParentId] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editUrl, setEditUrl] = useState('');
@@ -40,10 +42,10 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
 
   const handleAddLink = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !url.trim()) return;
+    if (!title.trim() || (!url.trim() && !isFolder)) return;
 
     let formattedUrl = url.trim();
-    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://') && !formattedUrl.startsWith('file://')) {
+    if (!isFolder && !formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://') && !formattedUrl.startsWith('file://')) {
       formattedUrl = `https://${formattedUrl}`;
     }
 
@@ -51,17 +53,21 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
     try {
       await axios.post('/api/featured-links', {
         title: title.trim(),
-        url: formattedUrl,
-        icon: icon.trim() || '⭐'
+        url: isFolder ? '#' : formattedUrl,
+        icon: icon.trim() || (isFolder ? '📁' : '⭐'),
+        is_folder: isFolder ? 1 : 0,
+        parent_id: parentId ? parseInt(parentId, 10) : null
       });
 
       setTitle('');
       setUrl('');
       setIcon('⭐');
-      showFeedback('Link pinned successfully!');
+      setIsFolder(false);
+      setParentId('');
+      showFeedback(isFolder ? 'Dropdown Category Folder Created!' : 'Link pinned successfully!');
       onRefreshData && onRefreshData();
     } catch (err) {
-      showFeedback('Failed to add pinned link: ' + (err.response?.data?.error || err.message));
+      showFeedback('Failed to add pinned item: ' + (err.response?.data?.error || err.message));
     } finally {
       setIsSubmitting(false);
     }
@@ -206,41 +212,95 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
             </h4>
 
             <form onSubmit={handleAddLink} className="space-y-4">
+              {/* Type Switcher */}
+              <div className="flex items-center gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsFolder(false)}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                    !isFolder ? 'bg-sky-500 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <Star className="w-3.5 h-3.5" /> Direct Link Button
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsFolder(true)}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                    isFolder ? 'bg-sky-500 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <Folder className="w-3.5 h-3.5" /> Dropdown Category Menu
+                </button>
+              </div>
+
               <IconPicker selectedIcon={icon} onSelectIcon={setIcon} />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">Title</label>
+                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                    {isFolder ? 'Dropdown Category Name' : 'Link Title'}
+                  </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. GitHub"
+                    placeholder={isFolder ? 'e.g. Dev Tools' : 'e.g. GitHub'}
                     required
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
+                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 text-xs"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">URL</label>
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://github.com"
-                    required
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
-                  />
-                </div>
+                {!isFolder ? (
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">URL</label>
+                    <input
+                      type="text"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://github.com"
+                      required={!isFolder}
+                      className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 text-xs"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Dropdown Preview</label>
+                    <div className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-3 py-2 text-slate-400 text-xs italic">
+                      Creates a hover dropdown folder on shelf
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* Parent Folder Selector (When adding a direct link) */}
+              {!isFolder && items.filter(i => i.is_folder === 1).length > 0 && (
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                    Place Inside Dropdown Category (Optional)
+                  </label>
+                  <select
+                    value={parentId}
+                    onChange={(e) => setParentId(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-sky-400 text-xs"
+                  >
+                    <option value="">(None - Top Level Button on Shelf)</option>
+                    {items.filter(i => i.is_folder === 1).map(f => (
+                      <option key={f.id} value={f.id}>
+                        📁 {f.title} (Dropdown Category)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isSubmitting || !title.trim() || !url.trim()}
+                  disabled={isSubmitting || !title.trim() || (!url.trim() && !isFolder)}
                   className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 transition"
                 >
-                  <Plus className="w-4 h-4" /> Add Pinned Link
+                  <Plus className="w-4 h-4" /> {isFolder ? 'Add Dropdown Category' : 'Add Pinned Link'}
                 </button>
               </div>
             </form>
@@ -337,6 +397,16 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                                 {Boolean(item.is_bookmark) && (
                                   <span className="text-[9px] bg-sky-500/20 text-sky-300 border border-sky-500/30 px-1.5 py-0.2 rounded font-mono">
                                     Category Bookmark
+                                  </span>
+                                )}
+                                {item.is_folder === 1 && (
+                                  <span className="text-[9px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-1.5 py-0.2 rounded font-mono">
+                                    📁 Dropdown Category
+                                  </span>
+                                )}
+                                {item.parent_id && (
+                                  <span className="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.2 rounded font-mono">
+                                    ↳ Nested Link
                                   </span>
                                 )}
                               </h5>

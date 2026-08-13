@@ -190,6 +190,8 @@ function initDb() {
     try { db.prepare('ALTER TABLE settings ADD COLUMN left_sidebar_open INTEGER DEFAULT 1').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN right_sidebar_open INTEGER DEFAULT 1').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN user_name TEXT DEFAULT "Sparrow"').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE featured_links ADD COLUMN parent_id INTEGER DEFAULT NULL').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE featured_links ADD COLUMN is_folder INTEGER DEFAULT 0').run(); } catch(e){}
 
     seedDefaultData();
 }

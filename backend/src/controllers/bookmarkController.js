@@ -57,9 +57,9 @@ function getDashboardData(req, res) {
         bookmarks: processedBookmarks.filter(b => b.category_id === cat.id)
     }));
 
-    const customFeatured = db.prepare('SELECT id, title, url, icon, position, 0 as is_bookmark FROM featured_links WHERE user_id = ? ORDER BY position ASC').all(userId);
+    const customFeatured = db.prepare('SELECT id, title, url, icon, position, 0 as is_bookmark, COALESCE(is_folder, 0) as is_folder, parent_id FROM featured_links WHERE user_id = ? ORDER BY position ASC').all(userId);
     const bookmarkFeatured = db.prepare(`
-        SELECT b.id, b.title, b.url, b.icon, b.position, 1 as is_bookmark, b.id as bookmark_id
+        SELECT b.id, b.title, b.url, b.icon, b.position, 1 as is_bookmark, b.id as bookmark_id, 0 as is_folder, NULL as parent_id
         FROM bookmarks b
         JOIN categories c ON b.category_id = c.id
         WHERE c.user_id = ? AND b.is_featured = 1
