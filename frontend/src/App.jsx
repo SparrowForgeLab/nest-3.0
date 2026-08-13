@@ -496,9 +496,9 @@ export default function App() {
                 transform: isLeftSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
                 transition: isResizingLeft ? 'none' : 'transform 300ms ease-in-out, width 300ms ease-in-out'
               }}
-              className="fixed top-0 bottom-0 left-0 z-40 bg-slate-950/95 border-r border-slate-700/80 backdrop-blur-2xl p-4 pt-20 pb-24 overflow-y-auto space-y-4 shadow-2xl"
+              className="fixed top-0 bottom-0 left-0 z-40 bg-slate-950/95 border-r border-slate-700/80 backdrop-blur-2xl p-4 pt-20 pb-24 overflow-y-auto flex flex-col gap-4 shadow-2xl"
             >
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2 flex-shrink-0">
                 <span className="text-xs font-bold uppercase tracking-wider text-sky-400">Left Sidebar</span>
                 <button onClick={() => toggleLeftSidebar(false)} className="text-slate-400 hover:text-slate-200 p-1">
                   <ChevronLeft className="w-4 h-4" />
@@ -525,7 +525,12 @@ export default function App() {
                 />
               )}
               {leftSidebarWidgets.includes('todo') && <TodoWidget />}
-              {leftSidebarWidgets.includes('rss') && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
+              {leftSidebarWidgets.includes('rss') && (
+                <RSSWidget
+                  onOpenSettings={() => setIsSettingsOpen(true)}
+                  isSoleSidebarWidget={leftSidebarWidgets.length === 1}
+                />
+              )}
               {leftSidebarWidgets.length === 0 && (
                 <div className="p-4 rounded-xl border border-slate-800/80 bg-slate-900/60 text-center space-y-2.5 my-4">
                   <p className="text-xs text-slate-400 font-medium">Left Sidebar is empty</p>
@@ -574,7 +579,7 @@ export default function App() {
                 transform: isRightSidebarOpen ? 'translateX(0)' : 'translateX(100%)',
                 transition: isResizingRight ? 'none' : 'transform 300ms ease-in-out, width 300ms ease-in-out'
               }}
-              className="fixed top-0 bottom-0 right-0 z-40 bg-slate-950/95 border-l border-slate-700/80 backdrop-blur-2xl p-4 pt-20 pb-24 overflow-y-auto space-y-4 shadow-2xl"
+              className="fixed top-0 bottom-0 right-0 z-40 bg-slate-950/95 border-l border-slate-700/80 backdrop-blur-2xl p-4 pt-20 pb-24 overflow-y-auto flex flex-col gap-4 shadow-2xl"
             >
               {/* Drag Handle on Left Edge of Right Sidebar */}
               <div
@@ -588,7 +593,7 @@ export default function App() {
                 <div className="w-0.5 h-10 bg-slate-600 group-hover:bg-sky-300 rounded-full" />
               </div>
 
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2 flex-shrink-0">
                 <span className="text-xs font-bold uppercase tracking-wider text-sky-400">Right Sidebar</span>
                 <button onClick={() => toggleRightSidebar(false)} className="text-slate-400 hover:text-slate-200 p-1">
                   <ChevronRight className="w-4 h-4" />
@@ -615,7 +620,12 @@ export default function App() {
                 />
               )}
               {rightSidebarWidgets.includes('todo') && <TodoWidget />}
-              {rightSidebarWidgets.includes('rss') && <RSSWidget onOpenSettings={() => setIsSettingsOpen(true)} />}
+              {rightSidebarWidgets.includes('rss') && (
+                <RSSWidget
+                  onOpenSettings={() => setIsSettingsOpen(true)}
+                  isSoleSidebarWidget={rightSidebarWidgets.length === 1}
+                />
+              )}
               {rightSidebarWidgets.length === 0 && (
                 <div className="p-4 rounded-xl border border-slate-800/80 bg-slate-900/60 text-center space-y-2.5 my-4">
                   <p className="text-xs text-slate-400 font-medium">Right Sidebar is empty</p>
