@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Folder, Lock, Trash2, Palette } from 'lucide-react';
 import IconPicker from './IconPicker';
+import ColorPicker from './ColorPicker';
 
 const COLOR_PRESETS = ['#38bdf8', '#a855f7', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#6366f1', '#84cc16'];
 
@@ -75,30 +76,7 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
 
           <IconPicker selectedIcon={icon} onSelectIcon={setIcon} />
 
-          <div>
-            <label className="block text-slate-300 font-medium mb-1 flex items-center gap-1.5">
-              <Palette className="w-4 h-4 text-sky-400" /> Category Accent Color
-            </label>
-            <div className="flex items-center gap-2">
-              {COLOR_PRESETS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`w-6 h-6 rounded-full transition-transform ${
-                    color === c ? 'scale-125 ring-2 ring-white shadow-lg' : 'opacity-80 hover:opacity-100'
-                  }`}
-                  style={{ backgroundColor: c }}
-                />
-              ))}
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="w-8 h-8 rounded-lg bg-transparent cursor-pointer border-none"
-              />
-            </div>
-          </div>
+          <ColorPicker selectedColor={color} onSelectColor={setColor} label="Category Accent Color" />
 
           <label className="flex items-center gap-2 cursor-pointer bg-slate-950 p-3 rounded-xl border border-slate-800 hover:border-slate-700">
             <input

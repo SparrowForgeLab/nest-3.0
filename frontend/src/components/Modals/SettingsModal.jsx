@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Sliders, Image, Download, Upload, Palette, LayoutGrid, Eye, Search, Check, Trash2, Sparkles, MapPin, Clock, Layout, Sidebar, CloudSun, Star, Smartphone, ShieldCheck, ListPlus, Plus } from 'lucide-react';
+import ColorPicker from './ColorPicker';
 
 const PRESET_WALLPAPERS = [
   {
@@ -339,6 +340,16 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
                       <option value="wikipedia">Wikipedia</option>
                     </select>
                   </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800">
+                  <ColorPicker
+                    selectedColor={settings.custom_accent || '#38bdf8'}
+                    onSelectColor={(newColor) => {
+                      document.documentElement.style.setProperty('--accent-color', newColor);
+                    }}
+                    label="Custom Theme Accent Color"
+                  />
                 </div>
               </div>
 
