@@ -114,7 +114,15 @@ function updateCategory(req, res) {
             is_vault = COALESCE(?, is_vault),
             is_visible = COALESCE(?, is_visible)
         WHERE id = ?
-    `).run(name, icon, color, position, is_vault, is_visible, id);
+    `).run(
+        name !== undefined ? name : null,
+        icon !== undefined ? icon : null,
+        color !== undefined ? color : null,
+        position !== undefined ? position : null,
+        is_vault !== undefined ? (is_vault ? 1 : 0) : null,
+        is_visible !== undefined ? (is_visible ? 1 : 0) : null,
+        id
+    );
 
     res.json({ success: true });
 }
@@ -188,7 +196,18 @@ function updateBookmark(req, res) {
             encrypted_data = COALESCE(?, encrypted_data),
             is_featured = COALESCE(?, is_featured)
         WHERE id = ?
-    `).run(category_id, finalTitle, finalUrl, finalDesc, icon, position, is_vault, encryptedData, is_featured, id);
+    `).run(
+        category_id !== undefined ? category_id : null,
+        finalTitle !== undefined ? finalTitle : null,
+        finalUrl !== undefined ? finalUrl : null,
+        finalDesc !== undefined ? finalDesc : null,
+        icon !== undefined ? icon : null,
+        position !== undefined ? position : null,
+        is_vault !== undefined ? (is_vault ? 1 : 0) : null,
+        encryptedData !== undefined ? encryptedData : null,
+        is_featured !== undefined ? (is_featured ? 1 : 0) : null,
+        id
+    );
 
     res.json({ success: true });
 }

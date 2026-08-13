@@ -218,6 +218,7 @@ export default function App() {
       } else {
         await axios.post('/api/bookmarks', bookmarkData);
       }
+      setEditingBookmark(null);
       fetchData();
     } catch (err) {
       console.error('Failed to save bookmark:', err);
@@ -781,7 +782,10 @@ export default function App() {
       {/* Modals */}
       <AddBookmarkModal
         isOpen={isBookmarkModalOpen}
-        onClose={() => setIsBookmarkModalOpen(false)}
+        onClose={() => {
+          setIsBookmarkModalOpen(false);
+          setEditingBookmark(null);
+        }}
         onSave={handleSaveBookmark}
         categories={categories}
         initialBookmark={editingBookmark}
