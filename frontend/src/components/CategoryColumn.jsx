@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import BookmarkCard from './BookmarkCard';
-import { Plus, Lock, Folder, MoreHorizontal, GripVertical } from 'lucide-react';
+import { Plus, Lock, Folder, MoreHorizontal, GripVertical, ArrowUpDown } from 'lucide-react';
 import RenderIcon from './RenderIcon';
 
 export default function CategoryColumn({
@@ -16,6 +16,25 @@ export default function CategoryColumn({
   onDropBookmark
 }) {
   const accentColor = category.color || '#38bdf8';
+
+  const [sortMode, setSortMode] = useState(() => {
+    return localStorage.getItem(`nest3_cat_sort_${category.id}`) || 'custom';
+  });
+
+  const handleToggleSort = () => {
+    const nextMode = sortMode === 'custom' ? 'az' : 'custom';
+    setSortMode(nextMode);
+    localStorage.setItem(`nest3_cat_sort_${category.id}`, nextMode);
+  };
+
+  const sortedBookmarks = useMemo(() => {
+    if (!category.bookmarks) return [];
+    const list = [...category.bookmarks];
+    if (sortMode === 'az') {
+      return list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    }
+    return list;
+  }, [category.bookmarks, sortMode]);
 
   const handleCategoryDragStart = (e) => {
     e.stopPropagation();
@@ -66,7 +85,21 @@ export default function CategoryColumn({
           )}
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
+          {/* Column Bookmark Sort Toggle Button */}
+          <button
+            onClick={handleToggleSort}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold border transition ${
+              sortMode === 'az'
+                ? 'bg-sky-500/20 text-sky-300 border-sky-500/40 shadow-sm'
+                : 'bg-slate-800/60 text-slate-400 border-slate-700/60 hover:text-slate-200'
+            }`}
+            title={sortMode === 'az' ? 'Sorted Alphabetically (A-Z). Click for Custom Drag & Drop.' : 'Sorted by Custom Drag & Drop. Click for Alphabetical A-Z.'}
+          >
+            <ArrowUpDown className="w-3 h-3" />
+            <span>{sortMode === 'az' ? 'A→Z' : 'CUSTOM'}</span>
+          </button>
+
           <button
             onClick={() => onAddBookmark && onAddBookmark(category.id)}
             className="p-1.5 rounded-lg text-slate-400 hover:text-sky-400 hover:bg-slate-800/80 transition"
@@ -88,8 +121,8 @@ export default function CategoryColumn({
       <div className={`gap-2 min-h-[60px] ${
         viewMode === 'card' ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'flex flex-col gap-2'
       }`}>
-        {category.bookmarks && category.bookmarks.length > 0 ? (
-          category.bookmarks.map((bm) => (
+        {sortedBookmarks.length > 0 ? (
+          sortedBookmarks.map((bm) => (
             <BookmarkCard
               key={bm.id}
               bookmark={bm}
