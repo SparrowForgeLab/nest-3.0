@@ -1,88 +1,9 @@
-import React, { useState } from 'react';
-import { Smile, Sparkles, ChevronDown, ChevronUp, Search, Globe, Link, Cpu, Server, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Smile, Sparkles, ChevronDown, ChevronUp, Search, Globe, Link, Cpu, Server, ChevronLeft, ChevronRight } from 'lucide-react';
 import RenderIcon from '../RenderIcon';
 
 export const QUICK_PRESETS = ['📁', '⚡', '🍿', '🔐', '🛠️', '🎮', '📚', '🌐', '💼', '🎵', '🏠', '🎨', '🚀', '⭐', '🔥', '💻'];
-
-export const SELFHST_ICONS = [
-  { name: 'Plex', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/plex.svg' },
-  { name: 'Jellyfin', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/jellyfin.svg' },
-  { name: 'Home Assistant', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/home-assistant.svg' },
-  { name: 'Portainer', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/portainer.svg' },
-  { name: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/docker.svg' },
-  { name: 'Sonarr', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/sonarr.svg' },
-  { name: 'Radarr', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/radarr.svg' },
-  { name: 'Prowlarr', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prowlarr.svg' },
-  { name: 'Overseerr', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/overseerr.svg' },
-  { name: 'Nextcloud', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/nextcloud.svg' },
-  { name: 'Pi-hole', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/pi-hole.svg' },
-  { name: 'AdGuard Home', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/adguard-home.svg' },
-  { name: 'Vaultwarden', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/vaultwarden.svg' },
-  { name: 'Bitwarden', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/bitwarden.svg' },
-  { name: 'Transmission', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/transmission.svg' },
-  { name: 'qBittorrent', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/qbittorrent.svg' },
-  { name: 'Grafana', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/grafana.svg' },
-  { name: 'Prometheus', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/prometheus.svg' },
-  { name: 'Uptime Kuma', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/uptime-kuma.svg' },
-  { name: 'Immich', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/immich.svg' },
-  { name: 'Paperless-ngx', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/paperless-ngx.svg' },
-  { name: 'Nginx Proxy Manager', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/nginx-proxy-manager.svg' },
-  { name: 'Traefik', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/traefik.svg' },
-  { name: 'Tailscale', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/tailscale.svg' },
-  { name: 'WireGuard', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/wireguard.svg' },
-  { name: 'Mealie', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/mealie.svg' },
-  { name: 'Audiobookshelf', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/audiobookshelf.svg' },
-  { name: 'Calibre-Web', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/calibre-web.svg' },
-  { name: 'Wallabag', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/wallabag.svg' },
-  { name: 'Proxmox', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/proxmox.svg' },
-  { name: 'Unraid', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/unraid.svg' },
-  { name: 'TrueNAS', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/truenas.svg' },
-  { name: 'Syncthing', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/syncthing.svg' },
-  { name: 'Homebridge', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/homebridge.svg' },
-  { name: 'Photoprism', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/photoprism.svg' },
-  { name: 'Frigate', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/frigate.svg' },
-  { name: 'Netdata', icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/netdata.svg' }
-];
-
-export const TECH_ICONS = [
-  { name: 'React', icon: 'https://cdn.simpleicons.org/react' },
-  { name: 'Node.js', icon: 'https://cdn.simpleicons.org/nodedotjs' },
-  { name: 'Python', icon: 'https://cdn.simpleicons.org/python' },
-  { name: 'JavaScript', icon: 'https://cdn.simpleicons.org/javascript' },
-  { name: 'TypeScript', icon: 'https://cdn.simpleicons.org/typescript' },
-  { name: 'Vue.js', icon: 'https://cdn.simpleicons.org/vuedotjs' },
-  { name: 'Next.js', icon: 'https://cdn.simpleicons.org/nextdotjs' },
-  { name: 'Tailwind CSS', icon: 'https://cdn.simpleicons.org/tailwindcss' },
-  { name: 'Docker', icon: 'https://cdn.simpleicons.org/docker' },
-  { name: 'Kubernetes', icon: 'https://cdn.simpleicons.org/kubernetes' },
-  { name: 'Linux', icon: 'https://cdn.simpleicons.org/linux' },
-  { name: 'Ubuntu', icon: 'https://cdn.simpleicons.org/ubuntu' },
-  { name: 'Debian', icon: 'https://cdn.simpleicons.org/debian' },
-  { name: 'Raspberry Pi', icon: 'https://cdn.simpleicons.org/raspberrypi' },
-  { name: 'PostgreSQL', icon: 'https://cdn.simpleicons.org/postgresql' },
-  { name: 'MySQL', icon: 'https://cdn.simpleicons.org/mysql' },
-  { name: 'Redis', icon: 'https://cdn.simpleicons.org/redis' },
-  { name: 'MongoDB', icon: 'https://cdn.simpleicons.org/mongodb' },
-  { name: 'Nginx', icon: 'https://cdn.simpleicons.org/nginx' },
-  { name: 'Apache', icon: 'https://cdn.simpleicons.org/apache' },
-  { name: 'Cloudflare', icon: 'https://cdn.simpleicons.org/cloudflare' },
-  { name: 'AWS', icon: 'https://cdn.simpleicons.org/amazonaws' },
-  { name: 'GitHub', icon: 'https://cdn.simpleicons.org/github' },
-  { name: 'GitLab', icon: 'https://cdn.simpleicons.org/gitlab' },
-  { name: 'VS Code', icon: 'https://cdn.simpleicons.org/visualstudiocode' },
-  { name: 'Postman', icon: 'https://cdn.simpleicons.org/postman' },
-  { name: 'Git', icon: 'https://cdn.simpleicons.org/git' },
-  { name: 'Rust', icon: 'https://cdn.simpleicons.org/rust' },
-  { name: 'Go', icon: 'https://cdn.simpleicons.org/go' },
-  { name: 'PHP', icon: 'https://cdn.simpleicons.org/php' },
-  { name: 'Laravel', icon: 'https://cdn.simpleicons.org/laravel' },
-  { name: 'WordPress', icon: 'https://cdn.simpleicons.org/wordpress' },
-  { name: 'Discord', icon: 'https://cdn.simpleicons.org/discord' },
-  { name: 'Steam', icon: 'https://cdn.simpleicons.org/steam' },
-  { name: 'Twitch', icon: 'https://cdn.simpleicons.org/twitch' },
-  { name: 'YouTube', icon: 'https://cdn.simpleicons.org/youtube' },
-  { name: 'Spotify', icon: 'https://cdn.simpleicons.org/spotify' }
-];
 
 export const CATEGORIZED_ICONS = [
   {
@@ -128,6 +49,53 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [customUrlInput, setCustomUrlInput] = useState('');
 
+  // API Icon Library States
+  const [iconsList, setIconsList] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch Icons from API when tab, search, or page changes
+  useEffect(() => {
+    if (!isExpanded) return;
+    if (activeTab === 'emoji' || activeTab === 'custom') return;
+
+    const endpoint = activeTab === 'selfhst' ? '/api/icons/selfhst' : '/api/icons/tech';
+    setLoading(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(endpoint, {
+          params: { search: searchQuery, page, limit: 60 }
+        });
+        if (res.data.success) {
+          setIconsList(res.data.icons);
+          setTotalCount(res.data.total);
+          setTotalPages(res.data.totalPages);
+        }
+      } catch (err) {
+        console.error('Failed to fetch icon library:', err);
+      } finally {
+        setLoading(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [isExpanded, activeTab, searchQuery, page]);
+
+  // Reset page to 1 when tab or search query changes
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setPage(1);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchQuery('');
+    setPage(1);
+  };
+
   const handleFetchFavicon = () => {
     if (!customUrlInput.trim()) return;
     try {
@@ -142,14 +110,6 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
     }
   };
 
-  const filteredSelfhst = SELFHST_ICONS.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredTech = TECH_ICONS.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between">
@@ -162,7 +122,7 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
           className="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1 bg-sky-500/10 hover:bg-sky-500/20 px-2.5 py-1 rounded-lg border border-sky-500/30 transition"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>{isExpanded ? 'Hide Full Library' : 'Browse selfh.st & techicons (100+ Icons)'}</span>
+          <span>{isExpanded ? 'Hide Full Library' : 'Browse selfh.st & techicons (6,800+ Icons)'}</span>
           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </button>
       </div>
@@ -203,33 +163,33 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
           <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 overflow-x-auto">
             <button
               type="button"
-              onClick={() => setActiveTab('selfhst')}
-              className={`flex-1 min-w-[100px] px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+              onClick={() => handleTabChange('selfhst')}
+              className={`flex-1 min-w-[120px] px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                 activeTab === 'selfhst'
                   ? 'bg-sky-500 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Server className="w-3.5 h-3.5" />
-              <span>selfh.st Icons</span>
+              <span>selfh.st (3,300+)</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('tech')}
-              className={`flex-1 min-w-[100px] px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+              onClick={() => handleTabChange('tech')}
+              className={`flex-1 min-w-[130px] px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                 activeTab === 'tech'
                   ? 'bg-sky-500 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Cpu className="w-3.5 h-3.5" />
-              <span>techicons.dev</span>
+              <span>techicons.dev (3,400+)</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('emoji')}
+              onClick={() => handleTabChange('emoji')}
               className={`flex-1 min-w-[90px] px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                 activeTab === 'emoji'
                   ? 'bg-sky-500 text-white shadow-md'
@@ -242,7 +202,7 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
 
             <button
               type="button"
-              onClick={() => setActiveTab('custom')}
+              onClick={() => handleTabChange('custom')}
               className={`flex-1 min-w-[90px] px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                 activeTab === 'custom'
                   ? 'bg-sky-500 text-white shadow-md'
@@ -256,61 +216,85 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
 
           {/* Search Bar (For Selfh.st, Tech, and Emoji tabs) */}
           {activeTab !== 'custom' && (
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
-              <input
-                type="text"
-                placeholder="Search icons by name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 outline-none focus:border-sky-400"
-              />
+            <div className="relative flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder={
+                    activeTab === 'selfhst'
+                      ? 'Search 3,360+ selfh.st icons (e.g. Plex, Jellyfin, Sonarr, Home Assistant)...'
+                      : activeTab === 'tech'
+                      ? 'Search 3,450+ tech icons (e.g. React, Node, Python, Docker)...'
+                      : 'Search emojis...'
+                  }
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 outline-none focus:border-sky-400"
+                />
+              </div>
+
+              {/* Pagination indicators for API icons */}
+              {(activeTab === 'selfhst' || activeTab === 'tech') && totalPages > 1 && (
+                <div className="flex items-center gap-1 text-xs text-slate-400 flex-shrink-0">
+                  <button
+                    type="button"
+                    disabled={page <= 1}
+                    onClick={() => setPage(p => Math.max(p - 1, 1))}
+                    className="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:text-white disabled:opacity-30 transition"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <span className="font-mono text-[11px] px-1">{page}/{totalPages}</span>
+                  <button
+                    type="button"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage(p => Math.min(p + 1, totalPages))}
+                    className="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:text-white disabled:opacity-30 transition"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* TAB 1: Selfh.st Icons */}
-          {activeTab === 'selfhst' && (
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-60 overflow-y-auto pr-1">
-              {filteredSelfhst.map((item) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  onClick={() => onSelectIcon(item.icon)}
-                  className={`p-2 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-sky-400/60 hover:bg-slate-800 transition flex flex-col items-center gap-1.5 group ${
-                    selectedIcon === item.icon ? 'border-sky-400 bg-sky-500/10' : ''
-                  }`}
-                  title={item.name}
-                >
-                  <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-semibold text-slate-300 truncate w-full text-center">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          {/* TAB 1 & 2: Selfh.st Icons & TechIcons (Full 6,800+ API library) */}
+          {(activeTab === 'selfhst' || activeTab === 'tech') && (
+            <div className="space-y-2">
+              <div className="text-[11px] text-slate-400 flex items-center justify-between px-1">
+                <span>Found {totalCount} matching SVG icons</span>
+                {loading && <span className="text-sky-400 animate-pulse font-medium">Searching icon library...</span>}
+              </div>
 
-          {/* TAB 2: TechIcons.dev */}
-          {activeTab === 'tech' && (
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-60 overflow-y-auto pr-1">
-              {filteredTech.map((item) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  onClick={() => onSelectIcon(item.icon)}
-                  className={`p-2 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-sky-400/60 hover:bg-slate-800 transition flex flex-col items-center gap-1.5 group ${
-                    selectedIcon === item.icon ? 'border-sky-400 bg-sky-500/10' : ''
-                  }`}
-                  title={item.name}
-                >
-                  <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-semibold text-slate-300 truncate w-full text-center">{item.name}</span>
-                </button>
-              ))}
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-64 overflow-y-auto pr-1">
+                {iconsList.map((item) => (
+                  <button
+                    key={item.slug || item.name}
+                    type="button"
+                    onClick={() => onSelectIcon(item.icon)}
+                    className={`p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-sky-400/60 hover:bg-slate-800 transition flex flex-col items-center gap-1.5 group ${
+                      selectedIcon === item.icon ? 'border-sky-400 bg-sky-500/10 shadow-sm' : ''
+                    }`}
+                    title={item.name}
+                  >
+                    <RenderIcon icon={item.icon} defaultIcon="📦" className="w-6 h-6 object-contain group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] font-semibold text-slate-300 truncate w-full text-center">{item.name}</span>
+                  </button>
+                ))}
+
+                {!loading && iconsList.length === 0 && (
+                  <div className="col-span-full p-6 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-xl">
+                    No icons found matching "{searchQuery}". Try searching another keyword or paste a custom URL!
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {/* TAB 3: Emoji Library */}
           {activeTab === 'emoji' && (
-            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
               {CATEGORIZED_ICONS.map((cat) => (
                 <div key={cat.category} className="space-y-1">
                   <span className="text-[11px] font-bold text-slate-400 block">{cat.category}</span>
@@ -335,7 +319,7 @@ export default function IconPicker({ selectedIcon, onSelectIcon }) {
 
           {/* TAB 4: Custom Image URL / Auto-Fetch Favicon */}
           {activeTab === 'custom' && (
-            <div className="space-y-3 p-2 bg-slate-900/60 rounded-xl border border-slate-800">
+            <div className="space-y-3 p-2.5 bg-slate-900/60 rounded-xl border border-slate-800">
               <div>
                 <label className="block text-[11px] font-semibold text-slate-300 mb-1">Direct SVG / Image URL or Web Address</label>
                 <div className="flex gap-2">

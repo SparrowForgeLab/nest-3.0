@@ -16,6 +16,7 @@ const featuredController = require('./controllers/featuredController');
 const dockController = require('./controllers/dockController');
 const scraperController = require('./controllers/scraperController');
 const widgetController = require('./controllers/widgetController');
+const iconController = require('./controllers/iconController');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -88,6 +89,8 @@ app.get('/api/bookmarks/export', authenticateToken, bookmarkController.exportBoo
 // Scraper & Icon CDN
 app.get('/api/scraper/scrape', scraperController.scrapeMetadata);
 app.get('/api/scraper/icons', scraperController.getIconLibraries);
+app.get('/api/icons/selfhst', iconController.getSelfhstIcons);
+app.get('/api/icons/tech', iconController.getTechIcons);
 
 // Widgets & Settings
 app.get('/api/widgets/weather', widgetController.getWeather);
