@@ -1,5 +1,6 @@
 import React from 'react';
 import { Star, Settings2, Plus } from 'lucide-react';
+import RenderIcon from './RenderIcon';
 
 export default function FeaturedLinks({ items = [], onOpenEditPinned }) {
   if (!items || items.length === 0) {
@@ -48,8 +49,8 @@ export default function FeaturedLinks({ items = [], onOpenEditPinned }) {
               }}
               className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/80 border border-slate-700/60 hover:border-sky-400/60 hover:bg-sky-500/10 transition-all duration-200 shadow-md group"
             >
-              <span className="text-lg leading-none group-hover:scale-110 transition-transform">{item.icon || '⭐'}</span>
-              <span className="text-xs font-medium text-slate-200 group-hover:text-sky-300 transition-colors">{item.title}</span>
+              <RenderIcon icon={item.icon} defaultIcon="⭐" className="w-5 h-5 object-contain group-hover:scale-110 transition-transform flex-shrink-0" />
+              <span className="text-xs font-medium text-slate-200 group-hover:text-sky-300 transition-colors truncate">{item.title}</span>
             </a>
           );
         })}

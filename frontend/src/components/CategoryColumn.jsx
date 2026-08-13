@@ -1,6 +1,7 @@
 import React from 'react';
 import BookmarkCard from './BookmarkCard';
 import { Plus, Lock, Folder, MoreHorizontal, GripVertical } from 'lucide-react';
+import RenderIcon from './RenderIcon';
 
 export default function CategoryColumn({
   category,
@@ -54,7 +55,7 @@ export default function CategoryColumn({
       >
         <div className="flex items-center gap-2 min-w-0">
           <GripVertical className="w-4 h-4 text-slate-500 group-hover:text-sky-400 transition-colors flex-shrink-0" />
-          <span className="text-xl flex-shrink-0">{category.icon || '📁'}</span>
+          <RenderIcon icon={category.icon} defaultIcon="📁" className="w-5 h-5 object-contain flex-shrink-0" />
           <h3 className="font-bold text-sm sm:text-base text-slate-100 truncate">
             {category.name}
           </h3>

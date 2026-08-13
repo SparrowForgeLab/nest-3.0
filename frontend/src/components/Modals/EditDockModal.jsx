@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Smartphone, Plus, Trash2, Edit2, ArrowLeft, ArrowRight, Check, RefreshCw, Sparkles } from 'lucide-react';
 import IconPicker from './IconPicker';
+import RenderIcon from '../RenderIcon';
 
 const DOCK_PRESETS = [
   { name: 'Gmail', url: 'https://mail.google.com', icon: '📧' },
@@ -311,9 +312,9 @@ export default function EditDockModal({ isOpen, onClose, dockItems = [], onRefre
                         /* View Item Row */
                         <>
                           <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <span className="text-xl leading-none flex-shrink-0 w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center">
-                              {item.icon || '📱'}
-                            </span>
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center">
+                              <RenderIcon icon={item.icon} defaultIcon="📱" className="w-5 h-5 object-contain" />
+                            </div>
                             <div className="min-w-0 flex-1">
                               <h5 className="font-bold text-slate-200 text-xs truncate flex items-center gap-1.5">
                                 {itemTitle}
