@@ -26,6 +26,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
   const [editTitle, setEditTitle] = useState('');
   const [editUrl, setEditUrl] = useState('');
   const [editIcon, setEditIcon] = useState('');
+  const [editParentId, setEditParentId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -88,22 +89,24 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
 
   const handleStartEdit = (item) => {
     setEditingId(item.id);
-    setEditTitle(item.title);
-    setEditUrl(item.url);
+    setEditTitle(item.title || '');
+    setEditUrl(item.url || '');
     setEditIcon(item.icon || '⭐');
+    setEditParentId(item.parent_id ? String(item.parent_id) : '');
   };
 
   const handleSaveEdit = async (id) => {
-    if (!editTitle.trim() || !editUrl.trim()) return;
+    const currentItem = items.find(i => i.id === id);
+    if (!editTitle.trim() || (!editUrl.trim() && !currentItem?.is_folder)) return;
 
     let formattedUrl = editUrl.trim();
-    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://') && !formattedUrl.startsWith('file://')) {
+    if (!currentItem?.is_folder && !formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://') && !formattedUrl.startsWith('file://')) {
       formattedUrl = `https://${formattedUrl}`;
     }
 
     setIsSubmitting(true);
     try {
-      if (items.find(i => i.id === id)?.is_bookmark) {
+      if (currentItem?.is_bookmark) {
         // Edit bookmark's title/url/icon or toggle
         await axios.put(`/api/bookmarks/${id}`, {
           title: editTitle.trim(),
@@ -113,15 +116,16 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
       } else {
         await axios.put(`/api/featured-links/${id}`, {
           title: editTitle.trim(),
-          url: formattedUrl,
-          icon: editIcon.trim()
+          url: currentItem?.is_folder ? '#' : formattedUrl,
+          icon: editIcon.trim(),
+          parent_id: editParentId ? parseInt(editParentId, 10) : null
         });
       }
       setEditingId(null);
-      showFeedback('Pinned link updated!');
+      showFeedback('Pinned item updated!');
       onRefreshData && onRefreshData();
     } catch (err) {
-      showFeedback('Failed to update link');
+      showFeedback('Failed to update item');
     } finally {
       setIsSubmitting(false);
     }
@@ -355,31 +359,48 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                             value={editIcon}
                             onChange={(e) => setEditIcon(e.target.value)}
                             placeholder="⭐"
-                            className="w-12 bg-slate-900 border border-slate-700 rounded-lg p-1 text-center text-sm text-slate-100"
+                            className="w-10 bg-slate-900 border border-slate-700 rounded-lg p-1 text-center text-xs text-slate-100"
                           />
                           <input
                             type="text"
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
                             placeholder="Title"
-                            className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-100"
+                            className="flex-1 min-w-[100px] bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-100"
                           />
-                          <input
-                            type="text"
-                            value={editUrl}
-                            onChange={(e) => setEditUrl(e.target.value)}
-                            placeholder="URL"
-                            className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-100"
-                          />
+                          {!item.is_folder && (
+                            <input
+                              type="text"
+                              value={editUrl}
+                              onChange={(e) => setEditUrl(e.target.value)}
+                              placeholder="URL"
+                              className="flex-1 min-w-[120px] bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-100"
+                            />
+                          )}
+                          {!item.is_folder && !item.is_bookmark && (
+                            <select
+                              value={editParentId}
+                              onChange={(e) => setEditParentId(e.target.value)}
+                              className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-100 max-w-[160px]"
+                              title="Assign to Category"
+                            >
+                              <option value="">Uncategorized (Top Level)</option>
+                              {items.filter(i => i.is_folder === 1 && i.id !== item.id).map(f => (
+                                <option key={f.id} value={f.id}>
+                                  📁 {f.title}
+                                </option>
+                              ))}
+                            </select>
+                          )}
                           <button
                             onClick={() => handleSaveEdit(item.id)}
-                            className="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1"
+                            className="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1 flex-shrink-0"
                           >
                             <Check className="w-3.5 h-3.5" /> Save
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
-                            className="px-2 py-1 text-slate-400 hover:text-slate-200 text-xs"
+                            className="px-2 py-1 text-slate-400 hover:text-slate-200 text-xs flex-shrink-0"
                           >
                             Cancel
                           </button>
