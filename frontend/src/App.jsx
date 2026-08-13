@@ -393,8 +393,8 @@ export default function App() {
   const bgDim = (settings.background_dim !== undefined ? settings.background_dim : 40) / 100;
 
   const showHeader = settings.show_header !== 0;
-  const weatherPos = (settings.weather_position && settings.weather_position !== 'grid') ? settings.weather_position : 'left-sidebar';
-  const todoPos = (settings.todo_position && settings.todo_position !== 'grid') ? settings.todo_position : 'right-sidebar';
+  const weatherPos = settings.weather_position || 'grid';
+  const todoPos = settings.todo_position || 'right-sidebar';
   const rssPos = settings.rss_position || 'grid';
   const clockPos = settings.clock_position || 'grid';
 
@@ -676,22 +676,26 @@ export default function App() {
           )}
 
           {/* Top Widgets Grid (For non-sidebar widgets) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            {settings.show_weather !== 0 && weatherPos === 'grid' && (
-              <WeatherWidget
-                location={settings.weather_location || 'London, UK'}
-                lat={settings.weather_lat || 51.5074}
-                lon={settings.weather_lon || -0.1278}
-                units={settings.weather_units || 'celsius'}
-                weatherSize={settings.weather_size || 'normal'}
-                weatherLayout={settings.weather_layout || 'vertical'}
-                weatherDisplaySize={settings.weather_display_size || 'large'}
-                onUpdateLocation={handleSaveSettings}
-              />
-            )}
-            {settings.show_todo !== 0 && todoPos === 'grid' && <TodoWidget />}
-            {settings.show_rss === 1 && rssPos === 'grid' && <RSSWidget feedUrl="https://news.ycombinator.com/rss" />}
-          </div>
+          {((settings.show_weather !== 0 && weatherPos === 'grid') ||
+            (settings.show_todo !== 0 && todoPos === 'grid') ||
+            (settings.show_rss === 1 && rssPos === 'grid')) && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              {settings.show_weather !== 0 && weatherPos === 'grid' && (
+                <WeatherWidget
+                  location={settings.weather_location || 'London, UK'}
+                  lat={settings.weather_lat || 51.5074}
+                  lon={settings.weather_lon || -0.1278}
+                  units={settings.weather_units || 'celsius'}
+                  weatherSize={settings.weather_size || 'normal'}
+                  weatherLayout={settings.weather_layout || 'vertical'}
+                  weatherDisplaySize={settings.weather_display_size || 'large'}
+                  onUpdateLocation={handleSaveSettings}
+                />
+              )}
+              {settings.show_todo !== 0 && todoPos === 'grid' && <TodoWidget />}
+              {settings.show_rss === 1 && rssPos === 'grid' && <RSSWidget feedUrl="https://news.ycombinator.com/rss" />}
+            </div>
+          )}
 
           {/* Category Columns Dashboard Grid */}
           <div
