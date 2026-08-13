@@ -236,12 +236,12 @@ function updateSettings(req, res) {
 
     const fields = [
         'theme', 'search_engine', 'column_count', 'font_size', 'layout_style',
-        'view_mode', 'show_header', 'show_daily', 'show_dock', 'show_clock', 'show_weather',
+        'view_mode', 'show_header', 'show_featured', 'show_daily', 'show_dock', 'show_clock', 'show_weather',
         'show_rss', 'show_todo', 'show_calendar', 'clock_type', 'clock_format',
-        'rss_position', 'todo_position', 'background_image',
+        'rss_position', 'todo_position', 'weather_position', 'clock_position', 'background_image',
         'background_blur', 'background_dim', 'weather_location',
         'weather_lat', 'weather_lon', 'weather_units', 'weather_size',
-        'weather_layout', 'weather_display_size'
+        'weather_layout', 'weather_display_size', 'left_sidebar_open', 'right_sidebar_open'
     ];
 
     const updates = [];

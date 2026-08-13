@@ -74,7 +74,7 @@ export default function SearchBar({ defaultEngine = 'google' }) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search web or type bang (!g, !yt, !gh, !ai, !w, !r)..."
+          placeholder="Search the web..."
           className="w-full bg-transparent text-slate-100 placeholder-slate-400 text-sm sm:text-base py-3.5 px-4 outline-none"
         />
 
@@ -86,21 +86,6 @@ export default function SearchBar({ defaultEngine = 'google' }) {
           <Search className="w-5 h-5" />
         </button>
       </form>
-
-      {/* Bang Shortcut Chips */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mt-2 px-2">
-        {BANGS.map((b) => (
-          <button
-            key={b.prefix}
-            type="button"
-            onClick={() => handleBangClick(b.prefix)}
-            className="text-[11px] font-medium bg-slate-800/60 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 px-2.5 py-0.5 rounded-full border border-slate-700/50 transition flex items-center gap-1"
-          >
-            <Sparkles className="w-3 h-3 text-sky-400" />
-            <span className="font-semibold text-sky-400">{b.prefix}</span> {b.name}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

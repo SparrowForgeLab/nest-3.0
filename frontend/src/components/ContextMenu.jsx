@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Edit2, Trash2, Star, Image, ArrowRightLeft, ExternalLink } from 'lucide-react';
+import { Edit2, Trash2, Star, Image, ArrowRightLeft, ExternalLink, Smartphone } from 'lucide-react';
 
-export default function ContextMenu({ x, y, bookmark, onClose, onEdit, onDelete, onToggleFeatured }) {
+export default function ContextMenu({ x, y, bookmark, onClose, onEdit, onDelete, onToggleFeatured, onToggleDock }) {
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -55,6 +55,17 @@ export default function ContextMenu({ x, y, bookmark, onClose, onEdit, onDelete,
       >
         <Star className={`w-3.5 h-3.5 ${bookmark.is_featured ? 'fill-amber-400 text-amber-400' : ''}`} />
         {bookmark.is_featured ? 'Unpin from Featured' : 'Pin to Featured Shelf'}
+      </button>
+
+      <button
+        onClick={() => {
+          onToggleDock && onToggleDock(bookmark);
+          onClose();
+        }}
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-sky-300 transition text-left"
+      >
+        <Smartphone className="w-3.5 h-3.5 text-sky-400" />
+        Pin to Bottom Dock
       </button>
 
       <div className="my-1 border-t border-slate-800" />

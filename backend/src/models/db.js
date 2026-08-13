@@ -1,4 +1,9 @@
-const Database = require('better-sqlite3');
+let Database;
+try {
+    Database = require(process.env.HOME + '/.npm-global/node_modules/better-sqlite3');
+} catch (e) {
+    Database = require('better-sqlite3');
+}
 const path = require('path');
 const fs = require('fs');
 
@@ -147,6 +152,7 @@ function initDb() {
             layout_style TEXT DEFAULT 'normal',
             view_mode TEXT DEFAULT 'grid',
             show_header INTEGER DEFAULT 1,
+            show_featured INTEGER DEFAULT 1,
             show_daily INTEGER DEFAULT 1,
             show_dock INTEGER DEFAULT 1,
             show_clock INTEGER DEFAULT 1,
@@ -171,13 +177,18 @@ function initDb() {
 
     // Column Migrations for existing databases
     try { db.prepare('ALTER TABLE settings ADD COLUMN show_header INTEGER DEFAULT 1').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE settings ADD COLUMN show_featured INTEGER DEFAULT 1').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN clock_type TEXT DEFAULT "digital"').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN clock_format TEXT DEFAULT "12h"').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN rss_position TEXT DEFAULT "grid"').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN todo_position TEXT DEFAULT "grid"').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE settings ADD COLUMN weather_position TEXT DEFAULT "grid"').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE settings ADD COLUMN clock_position TEXT DEFAULT "grid"').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN weather_size TEXT DEFAULT "normal"').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN weather_layout TEXT DEFAULT "vertical"').run(); } catch(e){}
     try { db.prepare('ALTER TABLE settings ADD COLUMN weather_display_size TEXT DEFAULT "large"').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE settings ADD COLUMN left_sidebar_open INTEGER DEFAULT 1').run(); } catch(e){}
+    try { db.prepare('ALTER TABLE settings ADD COLUMN right_sidebar_open INTEGER DEFAULT 1').run(); } catch(e){}
 
     seedDefaultData();
 }
@@ -198,7 +209,7 @@ function seedDefaultData() {
         const cat1 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'General & Search', '🔍', '#38bdf8', 0).lastInsertRowid;
         const cat2 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'Developer Tools', '⚡', '#a855f7', 1).lastInsertRowid;
         const cat3 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'Media & Social', '🍿', '#ec4899', 2).lastInsertRowid;
-        const cat4 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?, 1)').run(userId, 'Private Link Vault', '🔐', '#f43f5e', 3).lastInsertRowid;
+        const cat4 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position, is_vault) VALUES (?, ?, ?, ?, ?, 1)').run(userId, 'Private Link Vault', '🔐', '#f43f5e', 3).lastInsertRowid;
 
         // Seed Bookmarks
         db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat1, 'Google', 'https://google.com', 'Search the web', '🔍', 0);
@@ -227,6 +238,24 @@ function seedDefaultData() {
                 description: '39e9f6580f089bd2a16c72e27606e987:b9acb2361665a043c7b77ab6803bd514:48d0dfa6c62c95353597b819f72c3d526715f6b95c0106f3'
             })
         );
+
+        // Seed Featured Links
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'SparrowForge Lab', 'https://sparrowforgelab.com', '🪶', 0);
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'ChatGPT', 'https://chatgpt.com', '🤖', 1);
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'GitHub', 'https://github.com', '🐙', 2);
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'YouTube', 'https://youtube.com', '📺', 3);
+    } else {
+        // If user exists but featured_links table is empty, seed defaults
+        const user = db.prepare('SELECT id FROM users LIMIT 1').get();
+        if (user) {
+            const featuredCount = db.prepare('SELECT COUNT(*) as count FROM featured_links WHERE user_id = ?').get(user.id).count;
+            if (featuredCount === 0) {
+                db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(user.id, 'SparrowForge Lab', 'https://sparrowforgelab.com', '🪶', 0);
+                db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(user.id, 'ChatGPT', 'https://chatgpt.com', '🤖', 1);
+                db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(user.id, 'GitHub', 'https://github.com', '🐙', 2);
+                db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(user.id, 'YouTube', 'https://youtube.com', '📺', 3);
+            }
+        }
     }
 }
 

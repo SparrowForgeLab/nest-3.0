@@ -3,12 +3,10 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'sparrowforgelab_nest3_jwt_secret_2026_super_key';
 
 function authenticateToken(req, res, next) {
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
     
     if (!token) {
-        // Fallback to default user 1 for single-user self-hosted mode if no token
-        req.user = { id: 1, username: 'sparrow' };
-        return next();
+        return res.status(401).json({ error: 'Authentication required. Please log in.' });
     }
 
     try {
@@ -16,13 +14,12 @@ function authenticateToken(req, res, next) {
         req.user = decoded;
         next();
     } catch (err) {
-        req.user = { id: 1, username: 'sparrow' };
-        next();
+        return res.status(401).json({ error: 'Invalid or expired token. Please log in again.' });
     }
 }
 
 function verifyVaultUnlock(req, res, next) {
-    const vaultToken = req.cookies.vault_token || req.headers['x-vault-token'];
+    const vaultToken = req.cookies?.vault_token || req.headers['x-vault-token'];
     if (vaultToken) {
         try {
             const decoded = jwt.verify(vaultToken, JWT_SECRET);

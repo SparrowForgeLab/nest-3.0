@@ -1,13 +1,15 @@
 import React from 'react';
-import { Command, Plus, Lock, Settings, HelpCircle, ShieldCheck } from 'lucide-react';
+import { Command, Plus, Lock, Settings, HelpCircle, ShieldCheck, LogOut, User } from 'lucide-react';
 
 export default function Navbar({
+  user,
   vaultUnlocked,
   onOpenCmdPalette,
   onOpenAddBookmark,
   onOpenVaultModal,
   onOpenSettings,
-  onOpenTutorial
+  onOpenTutorial,
+  onLogout
 }) {
   return (
     <header className="w-full max-w-7xl mx-auto px-4 sm:px-8 pt-4 pb-2 flex items-center justify-between border-b border-slate-800/60 relative z-30">
@@ -75,6 +77,25 @@ export default function Navbar({
         >
           <Settings className="w-4 h-4" />
         </button>
+
+        {/* Logged In User Badge & Logout */}
+        {user && (
+          <div className="flex items-center gap-1 pl-1 sm:pl-2 border-l border-slate-800">
+            <span className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300">
+              <User className="w-3.5 h-3.5 text-sky-400" />
+              <span>{user.username}</span>
+            </span>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition"
+                title="Log Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

@@ -22,3 +22,6 @@ backend/data/uploads/*
 Thumbs.db
 .vscode/
 .idea/
+*.db
+*.db-shm
+*.db-wal

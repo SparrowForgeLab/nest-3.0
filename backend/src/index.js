@@ -12,6 +12,8 @@ const { authenticateToken, verifyVaultUnlock } = require('./middleware/auth');
 
 const authController = require('./controllers/authController');
 const bookmarkController = require('./controllers/bookmarkController');
+const featuredController = require('./controllers/featuredController');
+const dockController = require('./controllers/dockController');
 const scraperController = require('./controllers/scraperController');
 const widgetController = require('./controllers/widgetController');
 
@@ -42,9 +44,11 @@ app.use(express.static(frontendDist));
 
 // Auth & Vault Routes
 app.post('/api/auth/login', authController.login);
+app.post('/api/auth/register', authController.register);
+app.post('/api/auth/logout', authController.logout);
 app.post('/api/auth/vault/verify', authenticateToken, authController.verifyVaultPin);
 app.post('/api/auth/vault/lock', authController.lockVault);
-app.get('/api/auth/status', authenticateToken, verifyVaultUnlock, authController.checkStatus);
+app.get('/api/auth/status', verifyVaultUnlock, authController.checkStatus);
 
 // Dashboard Data
 app.get('/api/dashboard', authenticateToken, verifyVaultUnlock, bookmarkController.getDashboardData);
@@ -60,6 +64,21 @@ app.post('/api/bookmarks', authenticateToken, bookmarkController.createBookmark)
 app.put('/api/bookmarks/reorder', authenticateToken, bookmarkController.reorderBookmarks);
 app.put('/api/bookmarks/:id', authenticateToken, bookmarkController.updateBookmark);
 app.delete('/api/bookmarks/:id', authenticateToken, bookmarkController.deleteBookmark);
+
+// Featured / Pinned Links
+app.get('/api/featured-links', authenticateToken, featuredController.getFeaturedLinks);
+app.post('/api/featured-links', authenticateToken, featuredController.createFeaturedLink);
+app.put('/api/featured-links/reorder', authenticateToken, featuredController.reorderFeaturedLinks);
+app.put('/api/featured-links/:id', authenticateToken, featuredController.updateFeaturedLink);
+app.delete('/api/featured-links/:id', authenticateToken, featuredController.deleteFeaturedLink);
+
+// Dock Links & Pin to Dock
+app.get('/api/dock-links', authenticateToken, dockController.getDockLinks);
+app.post('/api/dock-links', authenticateToken, dockController.createDockLink);
+app.post('/api/dock-links/toggle-bookmark', authenticateToken, dockController.toggleBookmarkDock);
+app.put('/api/dock-links/reorder', authenticateToken, dockController.reorderDockLinks);
+app.put('/api/dock-links/:id', authenticateToken, dockController.updateDockLink);
+app.delete('/api/dock-links/:id', authenticateToken, dockController.deleteDockLink);
 
 // Bookmark Import / Export
 app.post('/api/bookmarks/import', authenticateToken, bookmarkController.importBookmarks);
