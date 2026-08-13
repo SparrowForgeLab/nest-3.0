@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink, Lock, MoreVertical, FileText, GripVertical } from 'lucide-react';
+import RenderIcon from './RenderIcon';
 
 export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMenu, onLockClick, onDragStartCard, onDropCard }) {
   const isLocked = bookmark.locked;
@@ -13,45 +14,17 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
       return <FileText className={`${sizeClass} text-amber-400`} />;
     }
 
-    const icon = bookmark.icon ? bookmark.icon.trim() : '';
-
-    if (icon.startsWith('http') || icon.startsWith('/') || icon.startsWith('data:')) {
-      return (
-        <img
-          src={icon}
-          alt=""
-          className={`${sizeClass} object-contain rounded`}
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
-        />
-      );
+    let defaultIcon = '🌐';
+    if (!bookmark.icon && bookmark.url) {
+      try {
+        const domain = new URL(bookmark.url).hostname;
+        if (domain) {
+          defaultIcon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        }
+      } catch (e) {}
     }
 
-    if (icon.length > 0) {
-      return <span className="text-lg leading-none">{icon}</span>;
-    }
-
-    // Google Favicon Fallback
-    try {
-      const domain = new URL(bookmark.url).hostname;
-      if (domain) {
-        return (
-          <img
-            src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
-            alt=""
-            className={`${sizeClass} object-contain rounded`}
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
-        );
-      }
-    } catch (e) {
-      // Fallback
-    }
-
-    return <span className="text-lg">🌐</span>;
+    return <RenderIcon icon={bookmark.icon || defaultIcon} defaultIcon="🌐" className={`${sizeClass} object-contain rounded`} />;
   };
 
   const handleClick = (e) => {
