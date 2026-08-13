@@ -597,13 +597,13 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
           {activeTab === 'pinned_dock' && (
             <div className="space-y-6">
               <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800 space-y-4">
-                <h4 className="font-bold text-amber-400 flex items-center gap-1.5 text-sm sm:text-base">
-                  <Star className="w-4 h-4" /> Pinned Links Shelf Settings
+                <h4 className="font-bold text-sky-400 flex items-center gap-1.5 text-sm sm:text-base">
+                  <Star className="w-4 h-4 text-sky-400 fill-sky-400" /> Pinned Links Shelf Settings
                 </h4>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
                   <div className="space-y-1">
                     <label className="flex items-center gap-2 text-slate-200 font-semibold cursor-pointer">
-                      <input type="checkbox" checked={showFeatured} onChange={(e) => setShowFeatured(e.target.checked)} className="rounded border-slate-700 bg-slate-900 text-amber-500 w-4 h-4" />
+                      <input type="checkbox" checked={showFeatured} onChange={(e) => setShowFeatured(e.target.checked)} className="rounded border-slate-700 bg-slate-900 text-sky-500 w-4 h-4" />
                       Show Pinned Links Shelf on Dashboard
                     </label>
                     <p className="text-xs text-slate-400">Quickly launch your top priority bookmarks directly below search.</p>
@@ -616,9 +616,9 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
                         onClose();
                         onOpenEditPinned();
                       }}
-                      className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-semibold transition flex items-center gap-1.5 whitespace-nowrap"
+                      className="px-4 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 font-semibold transition flex items-center gap-1.5 whitespace-nowrap"
                     >
-                      <ListPlus className="w-4 h-4" /> Manage Pinned Links
+                      <ListPlus className="w-4 h-4 text-sky-400" /> Manage Pinned Links
                     </button>
                   )}
                 </div>

@@ -175,8 +175,8 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4 flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
-              <Star className="w-5 h-5 fill-amber-400" />
+            <div className="p-2 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30">
+              <Star className="w-5 h-5 fill-sky-400 text-sky-400" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-100">Manage Pinned Links</h3>
@@ -199,7 +199,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
         <div className="flex-1 overflow-y-auto space-y-6 pr-1 text-xs sm:text-sm">
           {/* Add New Link Section */}
           <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
-            <h4 className="font-bold text-amber-300 flex items-center gap-1.5 text-xs uppercase tracking-wider">
+            <h4 className="font-bold text-sky-300 flex items-center gap-1.5 text-xs uppercase tracking-wider">
               <Plus className="w-4 h-4" /> Add New Pinned Link
             </h4>
 
@@ -212,7 +212,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                     value={icon}
                     onChange={(e) => setIcon(e.target.value)}
                     placeholder="⭐"
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-center text-base text-slate-100 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-center text-base text-slate-100 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
                   />
                 </div>
 
@@ -224,7 +224,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. GitHub"
                     required
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
                   />
                 </div>
 
@@ -236,7 +236,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                     onChange={(e) => setUrl(e.target.value)}
                     placeholder="https://github.com"
                     required
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
                   />
                 </div>
               </div>
@@ -245,7 +245,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                 <button
                   type="submit"
                   disabled={isSubmitting || !title.trim() || !url.trim()}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 transition"
+                  className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 transition"
                 >
                   <Plus className="w-4 h-4" /> Add Pinned Link
                 </button>
@@ -261,7 +261,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                     key={preset.title}
                     type="button"
                     onClick={() => handleQuickAddPreset(preset)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/60 text-slate-300 hover:text-amber-300 hover:border-amber-400/50 hover:bg-slate-800 text-xs font-medium transition"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/60 text-slate-300 hover:text-sky-300 hover:border-sky-400/50 hover:bg-slate-800 text-xs font-medium transition"
                   >
                     <span>{preset.icon}</span>
                     <span>{preset.title}</span>

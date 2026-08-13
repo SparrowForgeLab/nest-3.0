@@ -51,9 +51,9 @@ export default function ContextMenu({ x, y, bookmark, onClose, onEdit, onDelete,
           onToggleFeatured && onToggleFeatured(bookmark);
           onClose();
         }}
-        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-amber-300 transition text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-sky-300 transition text-left"
       >
-        <Star className={`w-3.5 h-3.5 ${bookmark.is_featured ? 'fill-amber-400 text-amber-400' : ''}`} />
+        <Star className={`w-3.5 h-3.5 ${bookmark.is_featured ? 'fill-sky-400 text-sky-400' : 'text-sky-400'}`} />
         {bookmark.is_featured ? 'Unpin from Featured' : 'Pin to Featured Shelf'}
       </button>
 
