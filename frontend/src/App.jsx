@@ -399,13 +399,13 @@ export default function App() {
   const clockPos = settings.clock_position || 'grid';
 
   const leftSidebarWidgets = [];
-  if (settings.show_clock !== 0 && clockPos === 'left-sidebar') leftSidebarWidgets.push('clock');
+  if (settings.show_clock !== 0 && settings.show_daily !== 0 && clockPos === 'left-sidebar') leftSidebarWidgets.push('clock');
   if (settings.show_weather !== 0 && weatherPos === 'left-sidebar') leftSidebarWidgets.push('weather');
   if (settings.show_todo !== 0 && todoPos === 'left-sidebar') leftSidebarWidgets.push('todo');
   if (settings.show_rss === 1 && rssPos === 'left-sidebar') leftSidebarWidgets.push('rss');
 
   const rightSidebarWidgets = [];
-  if (settings.show_clock !== 0 && clockPos === 'right-sidebar') rightSidebarWidgets.push('clock');
+  if (settings.show_clock !== 0 && settings.show_daily !== 0 && clockPos === 'right-sidebar') rightSidebarWidgets.push('clock');
   if (settings.show_weather !== 0 && weatherPos === 'right-sidebar') rightSidebarWidgets.push('weather');
   if (settings.show_todo !== 0 && todoPos === 'right-sidebar') rightSidebarWidgets.push('todo');
   if (settings.show_rss === 1 && rssPos === 'right-sidebar') rightSidebarWidgets.push('rss');
@@ -658,7 +658,7 @@ export default function App() {
             }`}
           >
           {/* Time & Date Clock (If set to header/grid) */}
-          {settings.show_clock !== 0 && clockPos === 'grid' && (
+          {settings.show_clock !== 0 && settings.show_daily !== 0 && clockPos === 'grid' && (
             <TimeWidget
               clockType={settings.clock_type || 'digital'}
               clockFormat={settings.clock_format || '12h'}

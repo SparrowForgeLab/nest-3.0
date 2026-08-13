@@ -149,9 +149,9 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
       setBgDim(settings.background_dim !== undefined ? settings.background_dim : 40);
       setShowHeader(settings.show_header !== 0);
       setShowFeatured(settings.show_featured !== 0);
-      setShowDaily(settings.show_daily !== 0);
+      setShowDaily(settings.show_daily !== 0 && settings.show_clock !== 0);
+      setShowClock(settings.show_daily !== 0 && settings.show_clock !== 0);
       setShowDock(settings.show_dock !== 0);
-      setShowClock(settings.show_clock !== 0);
       setShowWeather(settings.show_weather !== 0);
       setShowRss(settings.show_rss === 1);
       setShowTodo(settings.show_todo !== 0);
@@ -768,7 +768,16 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
                       Show Top Header Navigation Bar
                     </label>
                     <label className="flex items-center gap-2 text-slate-200 cursor-pointer">
-                      <input type="checkbox" checked={showDaily} onChange={(e) => setShowDaily(e.target.checked)} className="rounded border-slate-700 bg-slate-900 text-sky-500 w-4 h-4" />
+                      <input
+                        type="checkbox"
+                        checked={showDaily && showClock}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setShowDaily(val);
+                          setShowClock(val);
+                        }}
+                        className="rounded border-slate-700 bg-slate-900 text-sky-500 w-4 h-4"
+                      />
                       Show Daily Greeting & Time Banner
                     </label>
                   </div>
