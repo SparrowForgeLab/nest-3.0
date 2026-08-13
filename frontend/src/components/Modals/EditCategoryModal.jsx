@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Folder, Lock, Trash2, Palette, Smile } from 'lucide-react';
+import { X, Folder, Lock, Trash2, Palette } from 'lucide-react';
+import IconPicker from './IconPicker';
 
-const EMOJI_PRESETS = ['📁', '⚡', '🍿', '🔐', '🛠️', '🎮', '📚', '🌐', '💼', '🎵', '🏠', '🎨', '🚀', '⭐', '🔥', '💻'];
 const COLOR_PRESETS = ['#38bdf8', '#a855f7', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#6366f1', '#84cc16'];
 
 export default function EditCategoryModal({ isOpen, onClose, category, onSaveCategory, onDeleteCategory }) {
@@ -73,32 +73,7 @@ export default function EditCategoryModal({ isOpen, onClose, category, onSaveCat
             />
           </div>
 
-          <div>
-            <label className="block text-slate-300 font-medium mb-1 flex items-center gap-1.5">
-              <Smile className="w-4 h-4 text-sky-400" /> Icon / Emoji
-            </label>
-            <div className="grid grid-cols-8 gap-1.5 p-2 bg-slate-950 rounded-xl border border-slate-800 mb-2">
-              {EMOJI_PRESETS.map((em) => (
-                <button
-                  key={em}
-                  type="button"
-                  onClick={() => setIcon(em)}
-                  className={`p-1.5 rounded-lg text-base hover:bg-slate-800 transition ${
-                    icon === em ? 'bg-sky-500/20 border border-sky-400 scale-110' : ''
-                  }`}
-                >
-                  {em}
-                </button>
-              ))}
-            </div>
-            <input
-              type="text"
-              placeholder="Or type custom emoji or URL..."
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-slate-100 outline-none text-xs"
-            />
-          </div>
+          <IconPicker selectedIcon={icon} onSelectIcon={setIcon} />
 
           <div>
             <label className="block text-slate-300 font-medium mb-1 flex items-center gap-1.5">

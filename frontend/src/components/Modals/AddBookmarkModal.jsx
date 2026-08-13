@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Sparkles, Lock, Link, Info } from 'lucide-react';
+import IconPicker from './IconPicker';
 
 export default function AddBookmarkModal({ isOpen, onClose, onSave, categories = [], initialBookmark = null, initialCategoryId = null }) {
   const [title, setTitle] = useState('');
@@ -112,19 +113,7 @@ export default function AddBookmarkModal({ isOpen, onClose, onSave, categories =
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Icon (Emoji or Image URL)</label>
-            <input
-              type="text"
-              placeholder="✨ or https://..."
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              className="w-full bg-slate-950/80 border border-slate-700/60 rounded-xl px-3 py-2 text-slate-100 outline-none focus:border-sky-400"
-            />
-            <span className="text-[11px] text-slate-400 mt-1 block">
-              Leave blank to fetch website favicon automatically.
-            </span>
-          </div>
+          <IconPicker selectedIcon={icon} onSelectIcon={setIcon} />
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">Category Column</label>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Star, Plus, Trash2, Edit2, ArrowUp, ArrowDown, Check, RefreshCw, Link as LinkIcon, Sparkles } from 'lucide-react';
+import IconPicker from './IconPicker';
 
 const POPULAR_PRESETS = [
   { title: 'Google', url: 'https://google.com', icon: '🔍' },
@@ -203,20 +204,11 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
               <Plus className="w-4 h-4" /> Add New Pinned Link
             </h4>
 
-            <form onSubmit={handleAddLink} className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">Icon / Emoji</label>
-                  <input
-                    type="text"
-                    value={icon}
-                    onChange={(e) => setIcon(e.target.value)}
-                    placeholder="⭐"
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-center text-base text-slate-100 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
-                  />
-                </div>
+            <form onSubmit={handleAddLink} className="space-y-4">
+              <IconPicker selectedIcon={icon} onSelectIcon={setIcon} />
 
-                <div className="sm:col-span-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
                   <label className="block text-[11px] font-semibold text-slate-400 mb-1">Title</label>
                   <input
                     type="text"
@@ -228,7 +220,7 @@ export default function EditPinnedModal({ isOpen, onClose, featuredItems = [], o
                   />
                 </div>
 
-                <div className="sm:col-span-5">
+                <div>
                   <label className="block text-[11px] font-semibold text-slate-400 mb-1">URL</label>
                   <input
                     type="text"
