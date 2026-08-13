@@ -40,7 +40,7 @@ const PRESET_WALLPAPERS = [
   }
 ];
 
-export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSettings, onRefreshData, onOpenEditPinned, onOpenEditDock }) {
+export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSettings, onRefreshData, onOpenEditPinned, onOpenEditDock, onAddCategory }) {
   const [activeTab, setActiveTab] = useState('appearance');
 
   const [theme, setTheme] = useState('sparrow-dark');
