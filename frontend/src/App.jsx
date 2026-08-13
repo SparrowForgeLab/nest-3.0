@@ -116,6 +116,7 @@ export default function App() {
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [initialCategoryId, setInitialCategoryId] = useState(null);
+  const [initialParentId, setInitialParentId] = useState(null);
 
   const applyThemeSettings = (settings) => {
     if (!settings) return;
@@ -323,7 +324,7 @@ export default function App() {
   };
 
   // Drag & Drop Bookmark Reordering & Moving
-  const handleDropBookmark = async (e, targetBookmark, targetCategoryId) => {
+  const handleDropBookmark = async (e, targetBookmark, targetCategoryId, targetParentId = null) => {
     const bookmarkId = parseInt(e.dataTransfer.getData('bookmarkId'), 10);
     const targetCatId = parseInt(targetCategoryId, 10);
 
@@ -345,6 +346,7 @@ export default function App() {
       if (!sourceBm) return prev;
 
       sourceBm.category_id = targetCatId;
+      sourceBm.parent_id = targetParentId ? parseInt(targetParentId, 10) : null;
 
       const targetCat = categories.find(c => c.id === targetCatId);
       if (targetCat) {
@@ -359,7 +361,7 @@ export default function App() {
       const reorderItems = [];
       categories.forEach(cat => {
         cat.bookmarks.forEach((bm, idx) => {
-          reorderItems.push({ id: bm.id, category_id: cat.id, position: idx });
+          reorderItems.push({ id: bm.id, category_id: cat.id, position: idx, parent_id: bm.parent_id || null });
         });
       });
 
@@ -720,9 +722,10 @@ export default function App() {
                 key={cat.id}
                 category={cat}
                 viewMode={settings.view_mode || 'grid'}
-                onAddBookmark={(catId) => {
+                onAddBookmark={(catId, folderId) => {
                   setEditingBookmark(null);
                   setInitialCategoryId(catId);
+                  setInitialParentId(folderId || null);
                   setIsBookmarkModalOpen(true);
                 }}
                 onContextMenuBookmark={(e, bm) => {
@@ -785,11 +788,13 @@ export default function App() {
         onClose={() => {
           setIsBookmarkModalOpen(false);
           setEditingBookmark(null);
+          setInitialParentId(null);
         }}
         onSave={handleSaveBookmark}
         categories={categories}
         initialBookmark={editingBookmark}
         initialCategoryId={initialCategoryId}
+        initialParentId={initialParentId}
       />
 
       <EditCategoryModal

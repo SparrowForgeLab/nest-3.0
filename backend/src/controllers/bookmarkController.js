@@ -137,19 +137,19 @@ function deleteCategory(req, res) {
  * Bookmark CRUD
  */
 function createBookmark(req, res) {
-    const { category_id, title, url, description, icon, is_vault, is_featured } = req.body;
+    const { category_id, title, url, description, icon, is_vault, is_featured, parent_id, is_folder } = req.body;
 
     const maxPos = db.prepare('SELECT MAX(position) as maxPos FROM bookmarks WHERE category_id = ?').get(category_id).maxPos || 0;
 
     let encryptedData = null;
     let finalTitle = title;
-    let finalUrl = url;
+    let finalUrl = url || '#';
     let finalDesc = description || '';
 
     if (is_vault) {
         encryptedData = JSON.stringify({
             title: encryption.encrypt(title),
-            url: encryption.encrypt(url),
+            url: encryption.encrypt(url || '#'),
             description: encryption.encrypt(description || '')
         });
         finalTitle = '🔒 Encrypted Link';
@@ -158,16 +158,28 @@ function createBookmark(req, res) {
     }
 
     const result = db.prepare(`
-        INSERT INTO bookmarks (category_id, title, url, description, icon, position, is_vault, encrypted_data, is_featured)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(category_id, finalTitle, finalUrl, finalDesc, icon || '', maxPos + 1, is_vault ? 1 : 0, encryptedData, is_featured ? 1 : 0);
+        INSERT INTO bookmarks (category_id, title, url, description, icon, position, is_vault, encrypted_data, is_featured, parent_id, is_folder)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+        category_id,
+        finalTitle,
+        finalUrl,
+        finalDesc,
+        icon || (is_folder ? '📁' : ''),
+        maxPos + 1,
+        is_vault ? 1 : 0,
+        encryptedData,
+        is_featured ? 1 : 0,
+        parent_id || null,
+        is_folder ? 1 : 0
+    );
 
     res.json({ success: true, id: result.lastInsertRowid });
 }
 
 function updateBookmark(req, res) {
     const { id } = req.params;
-    const { category_id, title, url, description, icon, position, is_vault, is_featured } = req.body;
+    const { category_id, title, url, description, icon, position, is_vault, is_featured, parent_id, is_folder } = req.body;
 
     let encryptedData = null;
     let finalTitle = title;
@@ -194,7 +206,9 @@ function updateBookmark(req, res) {
             position = COALESCE(?, position),
             is_vault = COALESCE(?, is_vault),
             encrypted_data = COALESCE(?, encrypted_data),
-            is_featured = COALESCE(?, is_featured)
+            is_featured = COALESCE(?, is_featured),
+            parent_id = COALESCE(?, parent_id),
+            is_folder = COALESCE(?, is_folder)
         WHERE id = ?
     `).run(
         category_id !== undefined ? category_id : null,
@@ -206,6 +220,8 @@ function updateBookmark(req, res) {
         is_vault !== undefined ? (is_vault ? 1 : 0) : null,
         encryptedData !== undefined ? encryptedData : null,
         is_featured !== undefined ? (is_featured ? 1 : 0) : null,
+        parent_id !== undefined ? (parent_id ? parent_id : null) : null,
+        is_folder !== undefined ? (is_folder ? 1 : 0) : null,
         id
     );
 
@@ -214,22 +230,23 @@ function updateBookmark(req, res) {
 
 function deleteBookmark(req, res) {
     const { id } = req.params;
+    db.prepare('UPDATE bookmarks SET parent_id = NULL WHERE parent_id = ?').run(id);
     db.prepare('DELETE FROM bookmarks WHERE id = ?').run(id);
     res.json({ success: true });
 }
 
 function reorderBookmarks(req, res) {
-    const { items } = req.body; // Array of { id, position, category_id }
+    const { items } = req.body; // Array of { id, position, category_id, parent_id }
     if (!Array.isArray(items)) return res.status(400).json({ error: 'Invalid payload' });
 
-    const stmt = db.prepare('UPDATE bookmarks SET position = ?, category_id = ? WHERE id = ?');
-    const transaction = db.transaction((list) => {
-        for (const item of list) {
-            stmt.run(item.position, item.category_id, item.id);
+    const stmt = db.prepare('UPDATE bookmarks SET position = ?, category_id = ?, parent_id = ? WHERE id = ?');
+    const transaction = db.transaction((itemList) => {
+        for (const item of itemList) {
+            stmt.run(item.position, item.category_id, item.parent_id !== undefined ? item.parent_id : null, item.id);
         }
     });
-    transaction(items);
 
+    transaction(items);
     res.json({ success: true });
 }
 
