@@ -15,9 +15,11 @@ export default function Navbar({
     <header role="banner" className="w-full max-w-7xl mx-auto px-4 sm:px-8 pt-4 pb-2 flex items-center justify-between border-b border-slate-800/60 relative z-30">
       {/* Brand Title */}
       <div className="flex items-center gap-3">
-        <div aria-hidden="true" className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-400 to-indigo-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-lg">
-          N
-        </div>
+        <img
+          src="/N3STLogo.png"
+          alt="Nest 3.0 Logo"
+          className="w-9 h-9 object-contain rounded-xl shadow-lg border border-sky-500/30 transition-transform hover:scale-105"
+        />
         <div>
           <h1 className="text-lg font-bold tracking-tight text-slate-100 flex items-center gap-2">
             Nest <span className="text-sky-400 text-xs px-2 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30">3.0</span>
