@@ -185,16 +185,6 @@ function checkStatus(req, res) {
     }
 }
 
-module.exports = {
-    login,
-    register,
-    logout,
-    changePassword,
-    verifyVaultPin,
-    lockVault,
-    checkStatus
-};
-
 /**
  * Change User Password (Requires old password verification)
  */
@@ -225,3 +215,13 @@ function changePassword(req, res) {
 
     res.json({ success: true, message: 'Password updated successfully!' });
 }
+
+module.exports = {
+    login,
+    register,
+    logout,
+    changePassword,
+    verifyVaultPin,
+    lockVault,
+    checkStatus
+};

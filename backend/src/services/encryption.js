@@ -1,11 +1,19 @@
+/**
+ * Nest 3.0 Encryption Service
+ * Provides AES-256-GCM authenticated encryption and decryption for vault links.
+ * 
+ * Format of encrypted payload: `${iv}:${authTag}:${ciphertext}`
+ */
 const crypto = require('crypto');
 
 const ALGORITHM = 'aes-256-gcm';
-const SECRET_KEY = process.env.VAULT_SECRET_KEY || 'sparrowforgelab_nest3_vault_secret_key_2026_32bytes!!'; // 32 chars
+const SECRET_KEY = process.env.VAULT_SECRET_KEY || 'sparrowforgelab_nest3_vault_secret_key_2026_32bytes!!';
 const KEY = crypto.scryptSync(SECRET_KEY, 'nest3_salt', 32);
 
 /**
- * Encrypt plaintext string using AES-256-GCM
+ * Encrypt plaintext string using AES-256-GCM.
+ * @param {string} text - Plaintext string to encrypt.
+ * @returns {string} Encrypted string in "IV:AuthTag:Ciphertext" format.
  */
 function encrypt(text) {
     if (!text) return '';
@@ -18,7 +26,9 @@ function encrypt(text) {
 }
 
 /**
- * Decrypt ciphertext string using AES-256-GCM
+ * Decrypt ciphertext string using AES-256-GCM.
+ * @param {string} encryptedText - Encrypted string in "IV:AuthTag:Ciphertext" format.
+ * @returns {string} Decrypted plaintext string or fallback message on failure.
  */
 function decrypt(encryptedText) {
     if (!encryptedText) return '';

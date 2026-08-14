@@ -1,7 +1,14 @@
+/**
+ * Nest 3.0 Authentication Middleware
+ * Validates JWT session tokens and private link vault unlock tokens.
+ */
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sparrowforgelab_nest3_jwt_secret_2026_super_key';
 
+/**
+ * Middleware to verify JWT authentication token from cookies or Authorization header.
+ */
 function authenticateToken(req, res, next) {
     const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
     
@@ -18,6 +25,10 @@ function authenticateToken(req, res, next) {
     }
 }
 
+/**
+ * Middleware to check whether the private Vault is unlocked for the current session.
+ * Attaches `req.vaultUnlocked = true/false` to request object.
+ */
 function verifyVaultUnlock(req, res, next) {
     const vaultToken = req.cookies?.vault_token || req.headers['x-vault-token'];
     if (vaultToken) {
@@ -28,7 +39,7 @@ function verifyVaultUnlock(req, res, next) {
                 return next();
             }
         } catch (e) {
-            // Invalid vault token
+            // Invalid or expired vault token
         }
     }
     req.vaultUnlocked = false;

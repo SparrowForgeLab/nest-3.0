@@ -263,22 +263,6 @@ function updateSettings(req, res) {
     res.json({ success: true, settings: updatedSettings });
 }
 
-module.exports = {
-    getWeather,
-    searchLocation,
-    getRssFeed,
-    getCalendarEvents,
-    getTodos,
-    createTodo,
-    toggleTodo,
-    deleteTodo,
-    getRssFeeds,
-    createRssFeed,
-    deleteRssFeed,
-    updateSettings,
-    uploadBackground
-};
-
 /**
  * Multi-RSS Feeds Management
  */
@@ -320,3 +304,19 @@ function deleteRssFeed(req, res) {
     db.prepare('DELETE FROM rss_feeds WHERE id = ? AND user_id = ?').run(id, userId);
     res.json({ success: true });
 }
+
+module.exports = {
+    getWeather,
+    searchLocation,
+    getRssFeed,
+    getCalendarEvents,
+    getTodos,
+    createTodo,
+    toggleTodo,
+    deleteTodo,
+    getRssFeeds,
+    createRssFeed,
+    deleteRssFeed,
+    updateSettings,
+    uploadBackground
+};

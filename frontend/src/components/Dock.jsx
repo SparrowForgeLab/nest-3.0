@@ -6,21 +6,23 @@ export default function Dock({ items = [], onOpenEditDock }) {
 
   if (!items || items.length === 0) {
     return (
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
+      <aside role="region" aria-label="Application Dock" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
         <div className="glass-panel px-4 py-2 rounded-2xl flex items-center gap-3 border border-slate-700/60 shadow-2xl backdrop-blur-xl bg-slate-950/85">
-          <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+          <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
             📱 Application Dock
           </span>
           {onOpenEditDock && (
             <button
+              type="button"
               onClick={onOpenEditDock}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 text-xs font-bold transition"
+              aria-label="Add icons to application dock"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 text-xs font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
             >
-              <Plus className="w-3.5 h-3.5" /> Add Icons
+              <Plus className="w-3.5 h-3.5" aria-hidden="true" /> Add Icons
             </button>
           )}
         </div>
-      </div>
+      </aside>
     );
   }
 
@@ -70,7 +72,7 @@ export default function Dock({ items = [], onOpenEditDock }) {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+    <nav aria-label="Application Dock" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
       <div
         onMouseLeave={() => setHoveredIndex(null)}
         className="glass-panel px-3.5 py-2.5 rounded-2xl flex items-center border border-slate-700/70 shadow-2xl backdrop-blur-2xl bg-slate-950/85 transition-all duration-300"
@@ -88,6 +90,9 @@ export default function Dock({ items = [], onOpenEditDock }) {
               target={isFileScheme ? '_self' : '_blank'}
               rel="noopener noreferrer"
               onMouseEnter={() => setHoveredIndex(idx)}
+              onFocus={() => setHoveredIndex(idx)}
+              onBlur={() => setHoveredIndex(null)}
+              aria-label={`Dock item: ${item.name || item.title}`}
               onClick={(e) => {
                 if (isFileScheme) {
                   e.preventDefault();
@@ -96,25 +101,25 @@ export default function Dock({ items = [], onOpenEditDock }) {
                 }
               }}
               style={itemStyle}
-              className="group relative flex flex-col items-center justify-center w-10 h-10 rounded-2xl bg-slate-900/90 border border-slate-700/80 hover:bg-sky-500/20 hover:border-sky-400 transition-all duration-200 ease-out shadow-lg transform-gpu"
+              className="group relative flex flex-col items-center justify-center w-10 h-10 rounded-2xl bg-slate-900/90 border border-slate-700/80 hover:bg-sky-500/20 hover:border-sky-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 transition-all duration-200 ease-out shadow-lg transform-gpu"
             >
               {isImgIcon ? (
-                <img src={iconStr} alt="" className="w-5 h-5 object-contain rounded" />
+                <img src={iconStr} alt="" className="w-5 h-5 object-contain rounded" aria-hidden="true" />
               ) : (
-                <span className="text-xl leading-none">{iconStr || '📱'}</span>
+                <span className="text-xl leading-none" aria-hidden="true">{iconStr || '📱'}</span>
               )}
 
               {/* macOS Active Indicator Dot */}
-              <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-sky-400 opacity-75 group-hover:opacity-100 group-hover:scale-125 transition" />
+              <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-sky-400 opacity-75 group-hover:opacity-100 group-hover:scale-125 transition" aria-hidden="true" />
 
-              {/* Hover Tooltip Label */}
-              <span className="absolute -top-10 px-2.5 py-1 rounded-lg bg-slate-900/95 text-slate-100 text-xs font-semibold border border-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl">
+              {/* Hover/Focus Tooltip Label */}
+              <span className="absolute -top-10 px-2.5 py-1 rounded-lg bg-slate-900/95 text-slate-100 text-xs font-semibold border border-slate-700 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl">
                 {item.name || item.title}
               </span>
             </a>
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 }

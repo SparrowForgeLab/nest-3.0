@@ -8,10 +8,10 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
 
   const getIconElement = (sizeClass = 'w-5 h-5') => {
     if (isLocked) {
-      return <Lock className={`${sizeClass} text-rose-400 animate-pulse`} />;
+      return <Lock className={`${sizeClass} text-rose-400 animate-pulse`} aria-hidden="true" />;
     }
     if (isFileScheme) {
-      return <FileText className={`${sizeClass} text-amber-400`} />;
+      return <FileText className={`${sizeClass} text-amber-400`} aria-hidden="true" />;
     }
 
     let defaultIcon = '🌐';
@@ -80,14 +80,15 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
           target={isLocked || isFileScheme ? '_self' : '_blank'}
           rel="noopener noreferrer"
           onClick={handleClick}
-          className="flex items-center gap-2 flex-1 min-w-0"
+          aria-label={isLocked ? `Locked vault link: ${bookmark.title}` : `Open bookmark: ${bookmark.title}`}
+          className="flex items-center gap-2 flex-1 min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-md"
         >
-          <GripVertical className="w-3 h-3 text-slate-600 group-hover:text-slate-400 flex-shrink-0" />
+          <GripVertical className="w-3 h-3 text-slate-500 group-hover:text-slate-300 flex-shrink-0" aria-hidden="true" />
           <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
             {getIconElement('w-3.5 h-3.5')}
           </div>
 
-          <span className="font-semibold text-slate-200 group-hover:text-sky-300 truncate">
+          <span className="font-semibold text-slate-100 group-hover:text-sky-300 truncate">
             {bookmark.title}
           </span>
 
@@ -95,16 +96,18 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
           {isFileScheme && <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1 py-0.2 rounded font-mono">Local</span>}
         </a>
 
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <ExternalLink className="w-3 h-3 text-slate-400 hover:text-sky-400" />
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+          <ExternalLink className="w-3 h-3 text-slate-400 hover:text-sky-400" aria-hidden="true" />
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onContextMenu && onContextMenu(e, bookmark);
             }}
-            className="p-0.5 rounded text-slate-400 hover:text-slate-100"
+            aria-label={`More options for ${bookmark.title}`}
+            className="p-0.5 rounded text-slate-400 hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           >
-            <MoreVertical className="w-3.5 h-3.5" />
+            <MoreVertical className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -127,19 +130,21 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <GripVertical className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
+            <GripVertical className="w-4 h-4 text-slate-500 group-hover:text-slate-300" aria-hidden="true" />
             <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
               {getIconElement('w-6 h-6')}
             </div>
           </div>
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onContextMenu && onContextMenu(e, bookmark);
             }}
-            className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+            aria-label={`More options for ${bookmark.title}`}
+            className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           >
-            <MoreVertical className="w-4 h-4" />
+            <MoreVertical className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
@@ -149,7 +154,7 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
             {isLocked && <span className="text-[10px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded font-mono">Encrypted</span>}
           </h4>
           {bookmark.description && !isLocked && (
-            <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">{bookmark.description}</p>
+            <p className="text-xs text-slate-300 mt-1 line-clamp-2 leading-relaxed">{bookmark.description}</p>
           )}
         </div>
 
@@ -158,10 +163,11 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
           target={isLocked || isFileScheme ? '_self' : '_blank'}
           rel="noopener noreferrer"
           onClick={handleClick}
-          className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300"
+          aria-label={isLocked ? `Unlock vault link for ${bookmark.title}` : `Launch ${bookmark.title}`}
+          className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-md"
         >
           <span>Launch Link</span>
-          <ExternalLink className="w-3.5 h-3.5" />
+          <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
         </a>
       </div>
     );
@@ -180,13 +186,14 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
       }}
       className="group relative flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-700/50 bg-slate-900/60 hover:bg-slate-800/80 hover:border-sky-500/40 transition-all duration-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-sky-500/10"
     >
-      <GripVertical className="w-3.5 h-3.5 text-slate-600 group-hover:text-slate-400 flex-shrink-0" />
+      <GripVertical className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 flex-shrink-0" aria-hidden="true" />
       <a
         href={isLocked || isFileScheme ? '#' : bookmark.url}
         target={isLocked || isFileScheme ? '_self' : '_blank'}
         rel="noopener noreferrer"
         onClick={handleClick}
-        className="flex items-center gap-2.5 flex-1 min-w-0"
+        aria-label={isLocked ? `Locked vault link: ${bookmark.title}` : `Open bookmark: ${bookmark.title}`}
+        className="flex items-center gap-2.5 flex-1 min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-md"
       >
         <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center justify-center group-hover:scale-110 transition-transform">
           {getIconElement('w-5 h-5')}
@@ -199,22 +206,24 @@ export default function BookmarkCard({ bookmark, viewMode = 'grid', onContextMen
             {isFileScheme && <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">Local</span>}
           </h4>
           {bookmark.description && !isLocked && (
-            <p className="text-[11px] text-slate-400 truncate mt-0.5">{bookmark.description}</p>
+            <p className="text-[11px] text-slate-300 truncate mt-0.5">{bookmark.description}</p>
           )}
         </div>
 
-        <ExternalLink className="w-3.5 h-3.5 text-slate-500 opacity-0 group-hover:opacity-100 group-hover:text-sky-400 transition-opacity flex-shrink-0" />
+        <ExternalLink className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 group-hover:text-sky-400 transition-opacity flex-shrink-0" aria-hidden="true" />
       </a>
 
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           onContextMenu && onContextMenu(e, bookmark);
         }}
-        className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 transition-opacity"
+        aria-label={`Options for ${bookmark.title}`}
+        className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
         title="Options"
       >
-        <MoreVertical className="w-4 h-4" />
+        <MoreVertical className="w-4 h-4" aria-hidden="true" />
       </button>
     </div>
   );

@@ -175,25 +175,35 @@ function initDb() {
         );
     `);
 
-    // Column Migrations for existing databases
-    try { db.prepare('ALTER TABLE settings ADD COLUMN show_header INTEGER DEFAULT 1').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN show_featured INTEGER DEFAULT 1').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN clock_type TEXT DEFAULT "digital"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN clock_format TEXT DEFAULT "12h"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN rss_position TEXT DEFAULT "grid"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN todo_position TEXT DEFAULT "grid"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN weather_position TEXT DEFAULT "grid"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN clock_position TEXT DEFAULT "grid"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN weather_size TEXT DEFAULT "normal"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN weather_layout TEXT DEFAULT "vertical"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN weather_display_size TEXT DEFAULT "large"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN left_sidebar_open INTEGER DEFAULT 1').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN right_sidebar_open INTEGER DEFAULT 1').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE settings ADD COLUMN user_name TEXT DEFAULT "Sparrow"').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE featured_links ADD COLUMN parent_id INTEGER DEFAULT NULL').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE featured_links ADD COLUMN is_folder INTEGER DEFAULT 0').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE bookmarks ADD COLUMN parent_id INTEGER DEFAULT NULL').run(); } catch(e){}
-    try { db.prepare('ALTER TABLE bookmarks ADD COLUMN is_folder INTEGER DEFAULT 0').run(); } catch(e){}
+    // Idempotent column migrations for existing database schemas
+    const migrations = [
+        { table: 'settings', column: 'show_header', type: 'INTEGER DEFAULT 1' },
+        { table: 'settings', column: 'show_featured', type: 'INTEGER DEFAULT 1' },
+        { table: 'settings', column: 'clock_type', type: 'TEXT DEFAULT "digital"' },
+        { table: 'settings', column: 'clock_format', type: 'TEXT DEFAULT "12h"' },
+        { table: 'settings', column: 'rss_position', type: 'TEXT DEFAULT "grid"' },
+        { table: 'settings', column: 'todo_position', type: 'TEXT DEFAULT "grid"' },
+        { table: 'settings', column: 'weather_position', type: 'TEXT DEFAULT "grid"' },
+        { table: 'settings', column: 'clock_position', type: 'TEXT DEFAULT "grid"' },
+        { table: 'settings', column: 'weather_size', type: 'TEXT DEFAULT "normal"' },
+        { table: 'settings', column: 'weather_layout', type: 'TEXT DEFAULT "vertical"' },
+        { table: 'settings', column: 'weather_display_size', type: 'TEXT DEFAULT "large"' },
+        { table: 'settings', column: 'left_sidebar_open', type: 'INTEGER DEFAULT 1' },
+        { table: 'settings', column: 'right_sidebar_open', type: 'INTEGER DEFAULT 1' },
+        { table: 'settings', column: 'user_name', type: 'TEXT DEFAULT "Sparrow"' },
+        { table: 'featured_links', column: 'parent_id', type: 'INTEGER DEFAULT NULL' },
+        { table: 'featured_links', column: 'is_folder', type: 'INTEGER DEFAULT 0' },
+        { table: 'bookmarks', column: 'parent_id', type: 'INTEGER DEFAULT NULL' },
+        { table: 'bookmarks', column: 'is_folder', type: 'INTEGER DEFAULT 0' }
+    ];
+
+    for (const m of migrations) {
+        try {
+            db.prepare(`ALTER TABLE ${m.table} ADD COLUMN ${m.column} ${m.type}`).run();
+        } catch (e) {
+            // Expected failure if column already exists in SQLite
+        }
+    }
 
     seedDefaultData();
 }

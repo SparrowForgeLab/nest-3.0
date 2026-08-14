@@ -54,11 +54,14 @@ export default function SearchBar({ defaultEngine = 'google' }) {
 
   return (
     <div className="w-full max-w-3xl mx-auto mb-6">
-      <form onSubmit={handleSearch} className="relative flex items-center shadow-2xl rounded-2xl overflow-hidden glass-input border border-slate-700/60 focus-within:border-sky-400">
+      <form role="search" aria-label="Web Search" onSubmit={handleSearch} className="relative flex items-center shadow-2xl rounded-2xl overflow-hidden glass-input border border-slate-700/60 focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-400/50">
+        <label htmlFor="search-engine-select" className="sr-only">Select Search Engine</label>
         <select
+          id="search-engine-select"
           value={engine}
           onChange={(e) => setEngine(e.target.value)}
-          className="bg-slate-900/80 text-slate-200 text-xs sm:text-sm font-medium py-3 px-3 border-r border-slate-700/60 outline-none cursor-pointer hover:text-sky-400 transition"
+          aria-label="Search Engine"
+          className="bg-slate-900/80 text-slate-200 text-xs sm:text-sm font-medium py-3 px-3 border-r border-slate-700/60 outline-none cursor-pointer hover:text-sky-400 transition focus:ring-2 focus:ring-sky-400"
         >
           <option value="google">Google</option>
           <option value="duckduckgo">DuckDuckGo</option>
@@ -70,20 +73,25 @@ export default function SearchBar({ defaultEngine = 'google' }) {
           <option value="wikipedia">Wikipedia</option>
         </select>
 
+        <label htmlFor="search-input-field" className="sr-only">Search Query</label>
         <input
+          id="search-input-field"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search the web..."
-          className="w-full bg-transparent text-slate-100 placeholder-slate-400 text-sm sm:text-base py-3.5 px-4 outline-none"
+          aria-label="Search the web"
+          className="w-full bg-transparent text-slate-100 placeholder-slate-400 text-sm sm:text-base py-3.5 px-4 outline-none focus:ring-2 focus:ring-sky-400/50"
         />
 
         <button
           type="submit"
-          className="pr-4 pl-2 text-slate-400 hover:text-sky-400 transition"
+          aria-label="Submit search query"
+          className="pr-4 pl-2 text-slate-400 hover:text-sky-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-lg"
           title="Search"
         >
-          <Search className="w-5 h-5" />
+          <Search className="w-5 h-5" aria-hidden="true" />
+          <span className="sr-only">Search</span>
         </button>
       </form>
     </div>
