@@ -9,6 +9,10 @@ function getDashboardData(req, res) {
     const userId = req.user.id;
     const isVaultUnlocked = req.vaultUnlocked || false;
 
+    if (db.ensureUserDataSeeded) {
+        db.ensureUserDataSeeded(userId);
+    }
+
     const categories = db.prepare('SELECT * FROM categories WHERE user_id = ? ORDER BY position ASC').all(userId);
     const bookmarks = db.prepare(`
         SELECT b.*, c.user_id 

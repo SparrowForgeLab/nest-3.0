@@ -271,6 +271,57 @@ function seedDefaultData() {
     }
 }
 
+function ensureUserDataSeeded(userId) {
+    const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE user_id = ?').get(userId).count;
+    if (catCount === 0) {
+        const cat1 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'General & Search', '🔍', '#38bdf8', 0).lastInsertRowid;
+        const cat2 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'Developer Tools', '⚡', '#a855f7', 1).lastInsertRowid;
+        const cat3 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'Media & Social', '🍿', '#ec4899', 2).lastInsertRowid;
+        const cat4 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'D&D & Gaming', '🎲', '#10b981', 3).lastInsertRowid;
+        const cat5 = db.prepare('INSERT INTO categories (user_id, name, icon, color, position, is_vault) VALUES (?, ?, ?, ?, ?, 1)').run(userId, 'Private Link Vault', '🔐', '#f43f5e', 4).lastInsertRowid;
+
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat1, 'Google', 'https://google.com', 'Search the web', '🔍', 0);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat1, 'DuckDuckGo', 'https://duckduckgo.com', 'Privacy search engine', '🦆', 1);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat1, 'SparrowForge Lab', 'https://sparrowforgelab.com', 'Official Portal', '🪶', 2);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat1, 'Wikipedia', 'https://wikipedia.org', 'Free Encyclopedia', '🌐', 3);
+
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat2, 'GitHub', 'https://github.com', 'Code repository hosting', '🐙', 0);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat2, 'ChatGPT', 'https://chatgpt.com', 'AI Assistant', '🤖', 1);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat2, 'Stack Overflow', 'https://stackoverflow.com', 'Developer Q&A', '📚', 2);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat2, 'MDN Web Docs', 'https://developer.mozilla.org', 'Web Docs', '📖', 3);
+
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat3, 'YouTube', 'https://youtube.com', 'Videos and Music', '📺', 0);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat3, 'Twitch', 'https://twitch.tv', 'Live Streaming', '🎮', 1);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat3, 'Reddit', 'https://reddit.com', 'Front page of the internet', '🤖', 2);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat3, 'Spotify', 'https://open.spotify.com', 'Music & Podcasts', '🎵', 3);
+
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat4, 'D&D Beyond', 'https://www.dndbeyond.com', 'D&D Character & Rulebook Tool', '🐉', 0);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat4, 'Roll20', 'https://roll20.net', 'Virtual Tabletop', '🎲', 1);
+        db.prepare('INSERT INTO bookmarks (category_id, title, url, description, icon, position) VALUES (?, ?, ?, ?, ?, ?)').run(cat4, 'D&D 5e SRD', 'https://5esrd.com', '5e Rules Reference', '📜', 2);
+    }
+
+    const featCount = db.prepare('SELECT COUNT(*) as count FROM featured_links WHERE user_id = ?').get(userId).count;
+    if (featCount === 0) {
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'SparrowForge Lab', 'https://sparrowforgelab.com', '🪶', 0);
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'ChatGPT', 'https://chatgpt.com', '🤖', 1);
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'GitHub', 'https://github.com', '🐙', 2);
+        db.prepare('INSERT INTO featured_links (user_id, title, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'YouTube', 'https://youtube.com', '📺', 3);
+    }
+
+    const dockCount = db.prepare('SELECT COUNT(*) as count FROM dock_links WHERE user_id = ?').get(userId).count;
+    if (dockCount === 0) {
+        db.prepare('INSERT INTO dock_links (user_id, name, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'SparrowForge', 'https://sparrowforgelab.com', '🪶', 0);
+        db.prepare('INSERT INTO dock_links (user_id, name, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'GitHub', 'https://github.com', '🐙', 1);
+        db.prepare('INSERT INTO dock_links (user_id, name, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'ChatGPT', 'https://chatgpt.com', '🤖', 2);
+        db.prepare('INSERT INTO dock_links (user_id, name, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'YouTube', 'https://youtube.com', '📺', 3);
+        db.prepare('INSERT INTO dock_links (user_id, name, url, icon, position) VALUES (?, ?, ?, ?, ?)').run(userId, 'D&D Beyond', 'https://www.dndbeyond.com', '🐉', 4);
+    }
+}
+
 initDb();
+
+db.ensureUserDataSeeded = ensureUserDataSeeded;
+
+module.exports = db;
 
 module.exports = db;
