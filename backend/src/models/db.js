@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
@@ -206,11 +207,12 @@ function initDb() {
 function seedDefaultData() {
     const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
     if (userCount === 0) {
-        // Create default user "sparrow"
+        // Create default user "sparrow" with password "sparrow"
+        const defaultHash = bcrypt.hashSync('sparrow', 10);
         const userId = db.prepare(`
             INSERT INTO users (username, password_hash, vault_pin_hash)
-            VALUES ('sparrow', '$2a$10$e8wF3Q.p0Q2N/9n3N2H0..5h3e8W7V1v8n.p0Q2N/9n3N2H0..5h3', null)
-        `).run().lastInsertRowid;
+            VALUES ('sparrow', ?, null)
+        `).run(defaultHash).lastInsertRowid;
 
         // Seed settings
         db.prepare('INSERT INTO settings (user_id) VALUES (?)').run(userId);
