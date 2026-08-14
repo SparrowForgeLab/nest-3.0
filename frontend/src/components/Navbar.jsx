@@ -16,7 +16,7 @@ export default function Navbar({
       {/* Brand Title */}
       <div className="flex items-center gap-3">
         <img
-          src="/N3STLogo.png"
+          src="/N3STLogo.png?v=3.0"
           alt="Nest 3.0 Logo"
           className="w-9 h-9 object-contain rounded-xl shadow-lg border border-sky-500/30 transition-transform hover:scale-105"
         />
