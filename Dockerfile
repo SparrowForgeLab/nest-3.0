@@ -1,5 +1,5 @@
 # Step 1: Build Frontend
-FROM node:20-alpine AS frontend-builder
+FROM node:20-slim AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
@@ -7,11 +7,11 @@ COPY frontend/ ./
 RUN npm run build
 
 # Step 2: Build Backend & Production Image
-FROM node:20-alpine
+FROM node:20-slim
 WORKDIR /app
 
-# Install build tools for better-sqlite3 native bindings
-RUN apk add --no-cache python3 make g++
+# Install build tools for native bindings
+RUN apt-get update && apt-get install -y python3 make g++ gcc && rm -rf /var/lib/apt/lists/*
 
 COPY backend/package*.json ./
 RUN npm install --only=production

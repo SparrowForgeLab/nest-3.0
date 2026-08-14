@@ -1,9 +1,4 @@
-let Database;
-try {
-    Database = require(process.env.HOME + '/.npm-global/node_modules/better-sqlite3');
-} catch (e) {
-    Database = require('better-sqlite3');
-}
+const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 
