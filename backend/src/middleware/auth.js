@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'sparrowforgelab_nest3_jwt_secret_2
  * Middleware to verify JWT authentication token from cookies or Authorization header.
  */
 function authenticateToken(req, res, next) {
-    const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+    const token = req.cookies?.token || req.headers.authorization?.split(' ')[1] || req.query?.token;
     
     if (!token) {
         return res.status(401).json({ error: 'Authentication required. Please log in.' });

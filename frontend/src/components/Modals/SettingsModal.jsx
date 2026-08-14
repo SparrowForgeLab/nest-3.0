@@ -338,27 +338,40 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
     }
   };
 
+  const [importStatusMsg, setImportStatusMsg] = useState('');
+  const [importErrorMsg, setImportErrorMsg] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+
   const handleExportJSON = () => {
-    window.open('/api/bookmarks/export', '_blank');
+    const savedToken = localStorage.getItem('nest3_token');
+    const exportUrl = '/api/bookmarks/export' + (savedToken ? `?token=${encodeURIComponent(savedToken)}` : '');
+    window.open(exportUrl, '_blank');
   };
 
   const handleImportJSON = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    setImportStatusMsg('');
+    setImportErrorMsg('');
+    setIsImporting(true);
+
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
         const content = event.target.result;
-        if (file.name.endsWith('.json')) {
-          await axios.post('/api/bookmarks/import', { jsonContent: content });
+        let res;
+        if (file.name.toLowerCase().endsWith('.json')) {
+          res = await axios.post('/api/bookmarks/import', { jsonContent: content, overwrite: true });
         } else {
-          await axios.post('/api/bookmarks/import', { htmlContent: content });
+          res = await axios.post('/api/bookmarks/import', { htmlContent: content });
         }
-        alert('Bookmarks imported successfully!');
+        setImportStatusMsg(res.data?.message || 'Full backup restored successfully! Reloading your dashboard...');
         onRefreshData && onRefreshData();
       } catch (err) {
-        alert('Failed to import bookmarks');
+        setImportErrorMsg('Failed to restore backup: ' + (err.response?.data?.error || err.message));
+      } finally {
+        setIsImporting(false);
       }
     };
     reader.readAsText(file);
@@ -1129,28 +1142,68 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
             </div>
           )}
 
-          {/* TAB 6: DATA BACKUP */}
+          {/* TAB 6: DATA BACKUP & RESTORE */}
           {activeTab === 'data' && (
             <div className="space-y-6">
-              <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-800 space-y-4">
-                <h4 className="font-bold text-sky-400 flex items-center gap-1.5 text-sm sm:text-base">
-                  <Download className="w-4 h-4" /> Data Migration & Backups
-                </h4>
-                <p className="text-xs text-slate-400">Export your entire bookmark database, custom categories, dock apps, and settings as a clean JSON backup file, or import existing browser bookmarks.</p>
+              <div className="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-sky-400 flex items-center gap-2 text-base">
+                      <Download className="w-5 h-5" /> Full Backup & Restore System
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Export or restore your complete Nest 3.0 workspace — including all settings, custom categories, bookmarks, featured links, dock shortcuts, RSS feeds, and widgets.
+                    </p>
+                  </div>
+                </div>
 
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={handleExportJSON}
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 font-semibold transition flex items-center gap-2"
-                  >
-                    <Download className="w-4 h-4" /> Export Backup JSON
-                  </button>
+                {importStatusMsg && (
+                  <div className="p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>{importStatusMsg}</span>
+                  </div>
+                )}
 
-                  <label className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition flex items-center gap-2 cursor-pointer">
-                    <Upload className="w-4 h-4 text-emerald-400" /> Import JSON / HTML Bookmarks
-                    <input type="file" onChange={handleImportJSON} accept=".json,.html" className="hidden" />
-                  </label>
+                {importErrorMsg && (
+                  <div className="p-3.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+                    <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <span>{importErrorMsg}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h5 className="font-bold text-sm text-slate-200 flex items-center gap-2">
+                        <Download className="w-4 h-4 text-sky-400" /> Export Full Backup
+                      </h5>
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        Download a clean <code className="text-sky-300">.json</code> file containing all your settings, themes, bookmarks, widgets, and dock links.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleExportJSON}
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" /> Download Full Nest Backup (.json)
+                    </button>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h5 className="font-bold text-sm text-slate-200 flex items-center gap-2">
+                        <Upload className="w-4 h-4 text-emerald-400" /> Restore / Import File
+                      </h5>
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        Restore a Nest JSON backup or import Chrome/Firefox HTML bookmarks directly into your dashboard.
+                      </p>
+                    </div>
+                    <label className={`w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${isImporting ? 'opacity-50 pointer-events-none' : ''}`}>
+                      <Upload className="w-4 h-4" /> {isImporting ? 'Restoring Backup...' : 'Select Backup File (.json / .html)'}
+                      <input type="file" onChange={handleImportJSON} accept=".json,.html" className="hidden" disabled={isImporting} />
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
