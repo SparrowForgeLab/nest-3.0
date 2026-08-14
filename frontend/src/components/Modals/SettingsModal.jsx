@@ -57,6 +57,11 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
   const [searchEngine, setSearchEngine] = useState('google');
   const [userName, setUserName] = useState('Sparrow');
 
+  // Backup & Restore State
+  const [importStatusMsg, setImportStatusMsg] = useState('');
+  const [importErrorMsg, setImportErrorMsg] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+
   // User Profile & Password Change State
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -337,10 +342,6 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
       setTimeout(() => setUploadMessage(''), 4000);
     }
   };
-
-  const [importStatusMsg, setImportStatusMsg] = useState('');
-  const [importErrorMsg, setImportErrorMsg] = useState('');
-  const [isImporting, setIsImporting] = useState(false);
 
   const handleExportJSON = () => {
     const savedToken = localStorage.getItem('nest3_token');
@@ -1066,22 +1067,24 @@ export default function SettingsModal({ isOpen, onClose, settings = {}, onSaveSe
 
                 <div>
                   <label className="block text-slate-300 mb-1 font-medium">Search City / Location</label>
-                  <form onSubmit={handleSearchWeatherLoc} className="flex gap-2">
+                  <div className="flex gap-2">
                     <input
                       type="text"
                       placeholder="e.g. London, Tokyo, New York..."
                       value={weatherQuery}
                       onChange={(e) => setWeatherQuery(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearchWeatherLoc(e); } }}
                       className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 outline-none"
                     />
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={handleSearchWeatherLoc}
                       disabled={isSearchingLoc}
                       className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white rounded-xl font-semibold transition"
                     >
                       {isSearchingLoc ? 'Searching...' : 'Search'}
                     </button>
-                  </form>
+                  </div>
 
                   {weatherResults.length > 0 && (
                     <div className="mt-2 bg-slate-900 border border-slate-700 rounded-xl p-2 max-h-40 overflow-y-auto space-y-1">
