@@ -48,6 +48,7 @@ app.post('/api/auth/login', authController.login);
 app.post('/api/auth/register', authController.register);
 app.post('/api/auth/logout', authController.logout);
 app.post('/api/auth/change-password', authenticateToken, authController.changePassword);
+app.post('/api/auth/delete-account', authenticateToken, authController.deleteAccount);
 app.post('/api/auth/vault/verify', authenticateToken, authController.verifyVaultPin);
 app.post('/api/auth/vault/lock', authController.lockVault);
 app.get('/api/auth/status', verifyVaultUnlock, authController.checkStatus);

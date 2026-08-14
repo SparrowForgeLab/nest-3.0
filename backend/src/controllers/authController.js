@@ -216,11 +216,50 @@ function changePassword(req, res) {
     res.json({ success: true, message: 'Password updated successfully!' });
 }
 
+/**
+ * Delete User Account & All Associated Data
+ */
+function deleteAccount(req, res) {
+    const userId = req.user.id;
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ error: 'Password confirmation is required to delete your account.' });
+    }
+
+    const user = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(userId);
+    if (!user) {
+        return res.status(404).json({ error: 'User account not found.' });
+    }
+
+    const validPassword = bcrypt.compareSync(password, user.password_hash);
+    if (!validPassword) {
+        return res.status(401).json({ error: 'Incorrect password. Account deletion aborted.' });
+    }
+
+    // Delete user data
+    db.prepare('DELETE FROM bookmarks WHERE category_id IN (SELECT id FROM categories WHERE user_id = ?)').run(userId);
+    db.prepare('DELETE FROM categories WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM featured_links WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM dock_links WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM daily_links WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM todos WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM rss_feeds WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM calendar_feeds WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM settings WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+
+    res.clearCookie('token');
+    res.clearCookie('vault_token');
+    res.json({ success: true, message: 'Account deleted successfully.' });
+}
+
 module.exports = {
     login,
     register,
     logout,
     changePassword,
+    deleteAccount,
     verifyVaultPin,
     lockVault,
     checkStatus
