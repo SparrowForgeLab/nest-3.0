@@ -29,6 +29,10 @@ export default function AuthModal({ isOpen, onAuthSuccess }) {
       });
 
       if (res.data.success) {
+        if (res.data.token) {
+          localStorage.setItem('nest3_token', res.data.token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+        }
         setSuccessMsg(isRegisterMode ? 'Account created successfully! Welcome to Nest 3.0.' : 'Signed in successfully!');
         setTimeout(() => {
           onAuthSuccess && onAuthSuccess(res.data.user);

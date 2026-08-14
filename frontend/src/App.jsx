@@ -139,6 +139,11 @@ export default function App() {
 
   const fetchData = async () => {
     try {
+      const savedToken = localStorage.getItem('nest3_token');
+      if (savedToken) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+      }
+
       const authRes = await axios.get('/api/auth/status');
       if (authRes.data && authRes.data.authenticated && authRes.data.user) {
         setUser(authRes.data.user);
@@ -187,6 +192,8 @@ export default function App() {
     } catch (err) {
       console.error('Failed to log out:', err);
     }
+    localStorage.removeItem('nest3_token');
+    delete axios.defaults.headers.common['Authorization'];
     setIsAuthenticated(false);
     setUser(null);
     setData(null);
